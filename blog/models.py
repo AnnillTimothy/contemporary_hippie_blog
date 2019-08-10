@@ -17,3 +17,5 @@ class Post(models.Model):
     def __str__(self):
         return self.title
     
+    def snippit(self):
+        return self.text[:250] + "..."

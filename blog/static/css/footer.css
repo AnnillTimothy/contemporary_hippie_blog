@@ -1,0 +1,104 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+footer {
+    display: flex;
+    justify-content:space-between;
+    background-color: #eaeaea;
+}
+
+.quick-links, .social {
+    flex: 1;
+}
+
+.contact {
+    flex: 1.5;
+}
+
+button:hover {
+    background-color: #bde734;
+}
+
+.title {
+    text-transform: ;
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+a {
+    color: #424242;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #bde734;
+}
+
+footer div:nth-child(n) {
+    width: 33%;
+    margin: 40px 30px;
+}
+
+footer ul li, p, h2, h3, form input {
+    margin-bottom: 13px;
+    color: #424242;;
+	font-size: 14px;
+	text-decoration: none;
+    letter-spacing: 0.1em;
+}
+
+.quick-links .links li {
+    text-decoration: none;
+    list-style:circle;
+    margin-left: 20px;
+}
+
+.quick-links a:hover, .contact i:hover, .bottom a:hover {
+    color: #bde734;
+}
+
+.contact li {
+    display: inline-flex;
+    text-decoration: none;
+    list-style: none;
+    margin: 0px 5px 0px 0px;
+}
+
+.contact ul {
+    display: inline-flex;
+    margin-left: 20px;
+}
+
+.links li {
+    text-decoration: none;
+    list-style: none;
+}
+
+.links li a {
+    text-decoration: none;
+    color: #424242;
+}
+
+form input {
+    border: none;
+    padding: 7px;
+    width: 49%;
+}
+
+.bottom {
+    display: flex;
+    justify-content:space-around;
+    padding: 15px;       background-color: #eaeaea;
+    border-top: 1px solid white;
+}
+
+.bottom .links li {
+    display: inline-flex;
+    margin-right: 20px;
+    margin-bottom: 0px;
+    text-transform: uppercase;
+    font-size: 11px
+}

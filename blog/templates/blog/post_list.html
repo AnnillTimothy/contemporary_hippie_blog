@@ -1,22 +1,24 @@
-<html>
-    <head>
-        <title>Django Girls blog</title>
-    </head>
-    <body>
-        <div>
-            <h1><a href="/">Django Girls Blog</a></h1>
-        </div>
+<!--{% extends 'blog/base.html' %}
 
-        <div>
-            <p>published: 14.06.2014, 12:14</p>
-            <h2><a href="">My first post</a></h2>
-            <p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-        </div>
+{% block content %}
 
-        <div>
-            <p>published: 14.06.2014, 12:14</p>
-            <h2><a href="">My second post</a></h2>
-            <p>Aenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut f.</p>
+{% for post in posts %}
+<div class="latest-posts">
+    <div class="image-container">
+        <img src="#">
+    </div>
+    
+    <div class="content-container">
+        <div class="top">
+            <h4 class="category"><a class="primary" href="#">Category</a></h4>
+            <h4 class="date grey">{{ post.published_date }}</h4>
         </div>
-    </body>
-</html>
+        
+        <h1 class="">{{ post.title }}</h1>
+        <p>{{ post.snippit|linebreaksbr }}</p>
+        <button type="submit" name="read" class="btn large ">Read More!</button>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}-->
