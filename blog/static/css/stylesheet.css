@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'oh_belovedregular';
+    src: url('oh_beloved-webfont.woff2') format('woff2'),
+         url('oh_beloved-webfont.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+.main-font = {    
+    font-family: 'oh_belovedregular';
+}

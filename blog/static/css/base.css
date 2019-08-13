@@ -3,16 +3,6 @@
     padding: ;
 }
 
-@font-face {
-  font-family: test;
-  src: local('test'), url('../font/Oh%20Beloved.ttf') format("truetype");
-}
-
-.main-font {
-  font-family: test;
-}
-
-
 a {
     text-decoration: none;
 }
@@ -84,7 +74,7 @@ header {
 }
 
 .logo {
-    font-family: test;
+    font-family: 'oh_belovedregular';
     font-size: 5vh;
     font-weight: 600;
     letter-spacing: 3px;
@@ -170,7 +160,7 @@ nav {
 .content {
     justify-content: flex-end;
     display: flex;
-    padding: 1em 0px 0px 0px;
+    padding: 1em 0px 0px 15%;
     grid-column: 1/ 2;
     grid-row: 4 / 5;
     flex-direction: column;
@@ -244,3 +234,4 @@ nav {
     font-size: 13px;
     line-height: 1.5;
 }
+

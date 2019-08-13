@@ -2,14 +2,19 @@
 <!--DOCTYPE html-->
 <html>
     <head>
-        <title>Contemporary Hippie</title>
+        <title>{% block title %}Contemporary Hippie{% endblock title %}</title>
+        {% block head_favicon %}
+            <!--<link rel="icon" type="image/png"
+                  href="{{ STATIC_URL }}images/favicon.ico">-->
+        {% endblock head_favicon %}
         <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.7.0/css/all.css' integrity='sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ' crossorigin='anonymous'>
-        <link rel="stylesheet" href="{% static 'css/blog.css' %}">
+        <link rel="stylesheet" href="{% static 'css/base.css' %}">
         <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+        <link rel="stylesheet" href="{% static 'css/stylesheet.css' %}">
+        <link rel="stylesheet" href="{% static 'css/contact.css' %}">
         <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400&display=swap" rel="stylesheet">
     </head>
-    
-    
+        
     <body>
                 
         <!-- Wrapper-Start -->
@@ -23,16 +28,18 @@
                     <a class="search grey" href="#"><i class="fas fa-bars"></i></a>
                 </div>
                 
+                <a href="#">
                 <div class="logo-container">
                     <h1 class="logo grey">Contemporary</h1>
                     <img src="static/Untitled.png" alt="logo" />
                     <h1 class="logo grey">Hippie</h1>
                 </div>
+                </a>
 
                 <div class="social-links">
                     <ul>
-                        <li><a class="social-link" href="#"><i class="fab fa-facebook-f"></i></a></li>
-                        <li><a class="social-link" href="#"><i class="fab fa-instagram"></i></a></li>
+                        <li><a class="social-link" href="http://www.instagram.com/contemporary.hippie" target="_blank"><i class="fab fa-facebook-f"></i></a></li>
+                        <li><a class="social-link" href="http://www.instagram.com/contemporary.hippie"><i class="fab fa-instagram"></i></a></li>
                         <li><a class="social-link" href="#"><i class="fab fa-twitter"></i></a></li>
                         <li><a class="social-link" href="#"><i class="	far fa-envelope"></i></a></li>
                         <li><a class="social-link" href="#"><i class="fas fa-search antique"></i></a></li>
@@ -50,7 +57,7 @@
                     <li><a class="nav-link" href="#">Live</a></li>
                     <li><a class="nav-link" href="#">Eat</a></li>
                     <li><a class="nav-link" href="#">Travel</a></li>
-                    <li><a class="nav-link" href="#">Contact</a></li>
+                    <li><a class="nav-link" href="{% url 'contact_us' %}">Contact</a></li>
                     <li><a class="nav-link shop" href="#">Shop</a></li>
                 </ul>
             </nav>
@@ -58,7 +65,8 @@
             
             <!-- Hero-Start -->
             <div class="hero">
-    
+                {% block hero %}
+                {% endblock %}    
             </div>
             <!-- Hero-End -->
             
@@ -72,6 +80,8 @@
             
             <!-- Sidebar-Start -->
             <div class="sidebar">
+                {% block sidebar %}
+                {% endblock %}
             </div>
             <!-- Sidebar-End -->
                      
@@ -80,9 +90,8 @@
             <div class="footer">
                 
                 <footer>
-                    
                     <div class="quick-links">
-                        <h2 class="title">Quick Links</h2>
+                        <h2 class="main-font title">Quick Links</h2>
                         <ul id="" class="links">
                             <li id="" class=""><a href="https://the-fit-foodie.com/terms-and-conditions/">Terms and Conditions</a></li>
                             <li id="" class=""><a href="https://the-fit-foodie.com/privacy-policy/">Privacy Policy</a></li>
@@ -90,43 +99,44 @@
                             <li id="" class=""><a href="https://the-fit-foodie.com/contact/">Contact</a></li>
                         </ul>
                     </div>
+                    
                     <div class="social">
-                        <h2 class="title">Connect with Us</h2>
+                        <h2 class="main-font title">Connect with Us</h2>
                         <p>I get asked all the time what I shoot with and how I create consistently beautiful food</p>
                         <h3><a class="num" href="#"><i class="	far fa-envelope"></i> 071 508 4518</a></h3>
                         <h3><a class="mail" href="#"><i class="	far fa-envelope"></i> info@contempo.com</a></h3>
                     </div>
-
-    <div class="contact">
-        <h2 class="title">Newsletter</h2>
-        <form>
-            <input placeholder="First Name" type="text" name="widget-subscribe" class="widget-subscribe">
-            <input placeholder="Your E-Mail" type="text" name="widget-subscribe" class="widget-subscribe">
-        </form>
-        <button type="submit" name="submit" class="btn large ">Sign Up!</button>
-        <ul class="links">
-            <li><a class="social-link" href="#"><i class="fab fa-facebook-f"></i></a></li>
-            <li><a class="social-link" href="#"><i class="fab fa-instagram"></i></a></li>
-            <li><a class="social-link" href="#"><i class="fab fa-twitter"></i></a></li>
-            <li><a class="social-link" href="#"><i class="	far fa-envelope"></i></a></li>
-            <li><a class="social-link" href="#"><i class="fas fa-search antique"></i></a></li>
-            <li><a class="social-link" href="#"><i class="fas fa-shopping-bag antique"></i></a></li>
-        </ul>
-    </div>
-</footer>
-
-<div class="bottom">
-    <ul id="" class="links">
-        <li id="" class=""><a href="https://the-fit-foodie.com/terms-and-conditions/">Terms and Conditions</a></li>
-        <li id="" class=""><a href="https://the-fit-foodie.com/privacy-policy/">Privacy Policy</a></li>
-        <li id="" class=""><a href="https://the-fit-foodie.com/fit-foodie-shop-policies/">Shop Policies</a></li>
-        <li id="" class=""><a href="https://the-fit-foodie.com/contact/">Contact</a></li>
-    </ul>	
-</div>
+                    
+                    <div class="contact">
+                        <h2 class="main-font title">Newsletter</h2>
+                        <form>
+                            <input placeholder="First Name" type="text" name="widget-subscribe" class="widget-subscribe">
+                            <input placeholder="Your E-Mail" type="text" name="widget-subscribe" class="widget-subscribe">
+                        </form>
+                        <button type="submit" name="submit" class="btn large ">Sign Up!</button>
+                        <ul class="links">
+                            <li><a class="social-link" href="#"><i class="fab fa-facebook-f"></i></a></li>
+                            <li><a class="social-link" href="#"><i class="fab fa-instagram"></i></a></li>
+                            <li><a class="social-link" href="#"><i class="fab fa-twitter"></i></a></li>
+                            <li><a class="social-link" href="#"><i class="	far fa-envelope"></i></a></li>
+                            <li><a class="social-link" href="#"><i class="fas fa-search antique"></i></a></li>
+                            <li><a class="social-link" href="#"><i class="fas fa-shopping-bag antique"></i></a></li>
+                        </ul>
+                    </div>
+                </footer>
+                
+                <div class="bottom">
+                    <ul id="" class="links">
+                        <li id="" class=""><a href="https://the-fit-foodie.com/terms-and-conditions/">Terms and Conditions</a></li>
+                        <li id="" class=""><a href="https://the-fit-foodie.com/privacy-policy/">Privacy Policy</a></li>
+                        <li id="" class=""><a href="https://the-fit-foodie.com/fit-foodie-shop-policies/">Shop Policies</a></li>
+                        <li id="" class=""><a href="https://the-fit-foodie.com/contact/">Contact</a></li>
+                    </ul>
+                </div>
             
             </div>
             <!-- Footer-End -->
-            
+        
         </div>
         <!-- Wrapper-End -->
         

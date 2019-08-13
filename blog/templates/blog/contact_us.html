@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="form-wrapper">
+    <h1 class="heading uppercase">Contact</h1>
+    
+    <form class="contact-form" action="#" method="post" data-security="#">
+        
+        
+        <label for="widget-name" class="nametag">Names<span class="asterisk">*</span></label>
+        <input placeholder="First Name" type="text" name="widget-name" class="widget-name">
+        
+        <input placeholder="Last Name" type="text" name="widget-name" class="widget-name">
+        
+        <label for="widget-email" class="nametag">Email<span class="asterisk">*</span></label>
+        <input placeholder="E-Mail" type="text" name="widget-email" class="widget-email">
+        
+        <input placeholder="Confirm E-Mail" type="text" name="widget-email" class="widget-email">
+        
+        <label for="reason" class="nametag">Reason for Contact</label>
+        <select id="reason" name="reason">
+            <option value="General Question">General Question</option>
+            <option value="Advertising">Advertising</option>
+            <option value="Sponsorships">Sponsorships</option>
+            <option value="Advertising">Media Inquiries</option>
+            <option value="Media">Complaints</option>
+        </select>
+        
+        <label for="subject" class="nametag">Message<span class="asterisk">*</span></label>
+        <textarea id="subject" name="subject" placeholder="Write something.." style="height:200px"></textarea>
+        
+        <button type="submit" name="submit" class="button-dark uppercase">Submit</button>
+    
+    </form>
+    
+</div>
+
+{% endblock %}

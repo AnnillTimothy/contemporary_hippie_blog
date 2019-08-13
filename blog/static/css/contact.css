@@ -1,0 +1,58 @@
+.asterisk {
+    color: grey;
+}
+
+.form-wrapper .heading {
+    font-family: monospace;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+}
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px;
+}
+
+.contact-form {
+    width: 100%;
+}
+
+.nametag {
+    display: flex;
+    margin: 20px 0px 15px 0px;
+    font-family: sans-serif;
+}
+
+.widget-name, .widget-email {
+    display: inline-flex;
+    width: 49.7%;
+}
+
+#reason , #subject {
+    display: flex;
+    width: 100%
+}
+
+#subject {
+    margin-bottom: 20px;
+}
+
+#reason, #subject, .widget-name, .widget-email {
+    padding: 10px;
+    border: ;
+}
+
+.button-dark {
+    display: flex;
+    background: black;
+    color: white;
+    width: auto;
+    padding: 10px 20px;
+    justify-content: center;
+    font-family: sans-serif;
+    font-size: 11px;
+    border: 1px solid white;
+    letter-spacing: 2px;
+}

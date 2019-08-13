@@ -1,7 +1,8 @@
-<!--{% extends 'blog/base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 
+{% block latest %}
 {% for post in posts %}
 <div class="latest-posts">
     <div class="image-container">
@@ -10,15 +11,16 @@
     
     <div class="content-container">
         <div class="top">
-            <h4 class="category"><a class="primary" href="#">Category</a></h4>
+            <h4 class="category"><a class="primary" href="{% url 'post_detail' pk=post.pk %}">Category</a></h4>
             <h4 class="date grey">{{ post.published_date }}</h4>
         </div>
         
-        <h1 class="">{{ post.title }}</h1>
+        <h1 class=""><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h1>
         <p>{{ post.snippit|linebreaksbr }}</p>
-        <button type="submit" name="read" class="btn large ">Read More!</button>
+        <button type="submit" name="read" class="btn large"><a href="{% url 'post_detail' pk=post.pk %}">Read More!</a></button>
     </div>
 </div>
 {% endfor %}
+{% endblock %}
 
-{% endblock %}-->
+{% endblock %}
