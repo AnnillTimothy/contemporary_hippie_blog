@@ -28,7 +28,7 @@
                     <a class="search grey" href="#"><i class="fas fa-bars"></i></a>
                 </div>
                 
-                <a href="#">
+                <a href="{% url 'post_list' %}">
                 <div class="logo-container">
                     <h1 class="logo grey">Contemporary</h1>
                     <img src="static/Untitled.png" alt="logo" />
@@ -53,10 +53,10 @@
             <!-- Nav-Start -->
             <nav>
                 <ul class="nav-links">
-                    <li><a class="nav-link primary" href="#">About</a></li>
-                    <li><a class="nav-link" href="#">Live</a></li>
-                    <li><a class="nav-link" href="#">Eat</a></li>
-                    <li><a class="nav-link" href="#">Travel</a></li>
+                    <li><a class="nav-link primary" href="{% url 'about_us' %}">About</a></li>
+                    <li><a class="nav-link" href="{% url 'post_category' category='Lifestyle' %}">Live</a></li>
+                    <li><a class="nav-link" href="{% url 'post_category' category='Food' %}">Eat</a></li>
+                    <li><a class="nav-link" href="{% url 'post_category' category='Travel' %}">Travel</a></li>
                     <li><a class="nav-link" href="{% url 'contact_us' %}">Contact</a></li>
                     <li><a class="nav-link shop" href="#">Shop</a></li>
                 </ul>
@@ -130,7 +130,7 @@
                         <li id="" class=""><a href="https://the-fit-foodie.com/terms-and-conditions/">Terms and Conditions</a></li>
                         <li id="" class=""><a href="https://the-fit-foodie.com/privacy-policy/">Privacy Policy</a></li>
                         <li id="" class=""><a href="https://the-fit-foodie.com/fit-foodie-shop-policies/">Shop Policies</a></li>
-                        <li id="" class=""><a href="https://the-fit-foodie.com/contact/">Contact</a></li>
+                        <li id="" class=""><a href="{% url 'contact_us' %}">Contact</a></li>
                     </ul>
                 </div>
             

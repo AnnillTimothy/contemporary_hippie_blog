@@ -11,3 +11,21 @@
         <p>{{ post.text|linebreaksbr }}</p>
     </div>
 {% endblock %}
+
+
+<!--
+1. Slugify the Url instead by using post/<str:slug> in the url conf
+
+2. Create category attribute in Post model and link it with posts
+
+3. Create Hero view
+
+4. Create Author model
+
+5. Paginate items 
+
+6. Finish page views i.e categorisation 
+    lifestyle = Post.objects.filter(Post.category='Lifestyle')
+
+-->
+

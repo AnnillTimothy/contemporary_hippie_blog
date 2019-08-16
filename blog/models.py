@@ -9,6 +9,7 @@ class Post(models.Model):
     text = models.TextField()
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
+    categories = models.ManyToManyField('Category', related_name='posts')
     
     def publish(self):
         self.publish_date = timezone.now()
@@ -18,4 +19,13 @@ class Post(models.Model):
         return self.title
     
     def snippit(self):
-        return self.text[:250] + "..."
+        return self.text[:150] + "..."
+    
+class Category(models.Model):
+    name = models.CharField(max_length=20)
+    
+    def sorted(self):
+        return self.categories[:2]
+    
+    def __str__(self):
+        return self.name
