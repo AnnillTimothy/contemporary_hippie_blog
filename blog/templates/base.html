@@ -1,4 +1,5 @@
 {% load static %}
+
 <!--DOCTYPE html-->
 <html>
     <head>
@@ -28,10 +29,10 @@
                     <a class="search grey" href="#"><i class="fas fa-bars"></i></a>
                 </div>
                 
-                <a href="{% url 'post_list' %}">
+                <a href="{% url 'index' %}">
                 <div class="logo-container">
                     <h1 class="logo grey">Contemporary</h1>
-                    <img src="static/Untitled.png" alt="logo" />
+                    <img src="{% static 'images/Untitled.png' %}" alt="logo" />
                     <h1 class="logo grey">Hippie</h1>
                 </div>
                 </a>
@@ -73,6 +74,7 @@
             <!-- Content-Start -->
             <div class="content">
                 {% block content %}
+                
                 {% endblock %}
             </div>
             <!-- Content-End -->

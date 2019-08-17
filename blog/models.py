@@ -10,6 +10,7 @@ class Post(models.Model):
     created_date = models.DateTimeField(default=timezone.now)
     published_date = models.DateTimeField(blank=True, null=True)
     categories = models.ManyToManyField('Category', related_name='posts')
+    image = models.ImageField(upload_to='images/', blank=True, null=True)
     
     def publish(self):
         self.publish_date = timezone.now()

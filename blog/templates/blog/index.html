@@ -2,16 +2,14 @@
 
 {% block content %}
 
-{% block latest %}
 {% for post in posts %}
 <div class="latest-posts">
     <div class="image-container">
-        <img src="#">
+        <img src="{{ post.image.url }}" alt="{{ post.title }}">
     </div>
     
     <div class="content-container">
         <div class="top">
-            
             {% for category in post.categories.all %}
             <h4 class="category"><a class="primary" href="{% url 'post_category' category.name %}">{{ category.name }}</a></h4>
             {% endfor %}
@@ -25,6 +23,4 @@
     </div>
 </div>
 {% endfor %}
-{% endblock %}
-
 {% endblock %}
