@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="description" content="{% block meta_description %}Contemporary Hippie — Modern wellness, holistic health tips, organic products &amp; mindful living for the conscious consumer.{% endblock %}">
+  <meta name="keywords" content="wellness, holistic health, organic products, mindful living, yoga, natural remedies, contemporary hippie">
+  <meta name="author" content="Contemporary Hippie">
+  <meta name="robots" content="index, follow">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Contemporary Hippie">
+  <meta property="og:title" content="{% block og_title %}Contemporary Hippie — Modern Wellness &amp; Holistic Living{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Discover holistic health, organic products &amp; mindful living.{% endblock %}">
+  <meta property="og:image" content="{% block og_image %}{{ url_for('static', filename='images/og-default.jpg', _external=True) }}{% endblock %}">
+
+  <title>{% block title %}Contemporary Hippie{% endblock %}</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+  {% block extra_css %}{% endblock %}
+
+  <style>
+    /* ================================================================
+       CSS CUSTOM PROPERTIES
+       ================================================================ */
+    :root {
+      --clr-primary:    #4CAF50;
+      --clr-primary-dk: #388E3C;
+      --clr-primary-lt: #81C784;
+      --clr-accent:     #C9A54E;
+      --clr-accent-dk:  #B08D3A;
+      --clr-dark:       #1a1a1a;
+      --clr-dark-soft:  #2c2c2c;
+      --clr-light:      #f9f6f0;
+      --clr-light-warm: #f3ede2;
+      --clr-white:      #ffffff;
+      --clr-grey:       #888888;
+      --clr-grey-lt:    #e0e0e0;
+      --clr-danger:     #e74c3c;
+      --clr-warning:    #f39c12;
+      --clr-info:       #3498db;
+      --clr-success:    #4CAF50;
+
+      --ff-heading: 'Playfair Display', Georgia, serif;
+      --ff-body:    'Montserrat', 'Segoe UI', sans-serif;
+
+      --header-h:   72px;
+      --radius:     8px;
+      --radius-lg:  16px;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,.08);
+      --shadow-md:  0 4px 12px rgba(0,0,0,.1);
+      --shadow-lg:  0 8px 30px rgba(0,0,0,.12);
+      --transition: .3s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ================================================================
+       RESET & BASE
+       ================================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--ff-body);
+      color: var(--clr-dark);
+      background: var(--clr-light);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    a { color: inherit; text-decoration: none; transition: color var(--transition); }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+    /* ================================================================
+       UTILITY
+       ================================================================ */
+    .container {
+      width: 100%;
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; margin: -1px; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+
+    /* ================================================================
+       YOGA LOADING OVERLAY
+       ================================================================ */
+    .yoga-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--clr-light);
+      opacity: 1;
+      pointer-events: all;
+      transition: opacity .5s ease;
+    }
+
+    .yoga-overlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .yoga-overlay svg {
+      width: 120px;
+      height: 120px;
+    }
+
+    .yoga-overlay .yoga-text {
+      position: absolute;
+      bottom: calc(50% - 90px);
+      font-family: var(--ff-heading);
+      font-size: .85rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--clr-primary);
+      opacity: 0;
+    }
+
+    /* ================================================================
+       HEADER / NAV
+       ================================================================ */
+    .site-header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      z-index: 1000;
+      background: rgba(249,246,240,.82);
+      backdrop-filter: blur(14px) saturate(1.6);
+      -webkit-backdrop-filter: blur(14px) saturate(1.6);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+
+    .site-header.scrolled {
+      background: rgba(249,246,240,.96);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    /* Logo */
+    .logo a {
+      font-family: var(--ff-heading);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--clr-dark);
+      letter-spacing: -.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo a:hover { color: var(--clr-primary); }
+
+    .logo .logo-leaf {
+      width: 28px; height: 28px;
+      fill: var(--clr-primary);
+      flex-shrink: 0;
+      transition: transform var(--transition);
+    }
+
+    .logo a:hover .logo-leaf { transform: rotate(-12deg) scale(1.1); }
+
+    /* Main Nav */
+    .main-nav { display: flex; align-items: center; gap: 32px; }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-links a {
+      position: relative;
+      font-size: .875rem;
+      font-weight: 500;
+      letter-spacing: .3px;
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      color: var(--clr-dark-soft);
+      transition: color var(--transition), background var(--transition);
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--clr-primary);
+      background: rgba(76,175,80,.08);
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 50%; transform: translateX(-50%) scaleX(0);
+      width: 20px; height: 2px;
+      background: var(--clr-primary);
+      border-radius: 1px;
+      transition: transform var(--transition);
+    }
+
+    .nav-links a:hover::after,
+    .nav-links a.active::after { transform: translateX(-50%) scaleX(1); }
+
+    /* Header Actions */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Search */
+    .search-toggle,
+    .cart-btn,
+    .user-menu-toggle {
+      position: relative;
+      width: 40px; height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      color: var(--clr-dark-soft);
+      font-size: 1.05rem;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .search-toggle:hover,
+    .cart-btn:hover,
+    .user-menu-toggle:hover {
+      background: rgba(76,175,80,.1);
+      color: var(--clr-primary);
+    }
+
+    .search-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 1100;
+      background: rgba(26,26,26,.6);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 120px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition);
+    }
+
+    .search-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .search-box {
+      width: 100%;
+      max-width: 600px;
+      background: var(--clr-white);
+      border-radius: var(--radius-lg);
+      padding: 8px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-20px);
+      transition: transform var(--transition);
+    }
+
+    .search-overlay.open .search-box { transform: translateY(0); }
+
+    .search-box form { display: flex; align-items: center; gap: 8px; }
+
+    .search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-family: var(--ff-body);
+      font-size: 1rem;
+      padding: 12px 16px;
+      background: transparent;
+      color: var(--clr-dark);
+    }
+
+    .search-box input::placeholder { color: var(--clr-grey); }
+
+    .search-box button {
+      background: var(--clr-primary);
+      color: var(--clr-white);
+      width: 44px; height: 44px;
+      border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: background var(--transition);
+    }
+
+    .search-box button:hover { background: var(--clr-primary-dk); }
+
+    .search-results-dropdown {
+      max-height: 340px;
+      overflow-y: auto;
+      padding: 8px 0;
+      display: none;
+    }
+
+    .search-results-dropdown.has-results { display: block; border-top: 1px solid var(--clr-grey-lt); }
+
+    .search-result-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      transition: background var(--transition);
+    }
+
+    .search-result-item:hover { background: var(--clr-light); }
+
+    .search-result-item .result-type {
+      font-size: .65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: rgba(76,175,80,.12);
+      color: var(--clr-primary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    .search-result-item .result-title {
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--clr-dark);
+    }
+
+    /* Cart Badge */
+    .cart-badge {
+      position: absolute;
+      top: 2px; right: 2px;
+      background: var(--clr-accent);
+      color: var(--clr-white);
+      font-size: .6rem;
+      font-weight: 700;
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 1;
+    }
+
+    .cart-badge:empty { display: none; }
+
+    /* User Dropdown */
+    .user-dropdown-wrap { position: relative; }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 200px;
+      background: var(--clr-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid rgba(0,0,0,.06);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-8px);
+      transition: opacity var(--transition), transform var(--transition), visibility var(--transition);
+      z-index: 100;
+    }
+
+    .user-dropdown-wrap:hover .user-dropdown,
+    .user-dropdown-wrap.open .user-dropdown {
+      opacity: 1; visibility: visible; transform: translateY(0);
+    }
+
+    .user-dropdown a,
+    .user-dropdown button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 16px;
+      font-size: .875rem;
+      color: var(--clr-dark-soft);
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .user-dropdown a:hover,
+    .user-dropdown button:hover {
+      background: var(--clr-light);
+      color: var(--clr-primary);
+    }
+
+    .user-dropdown .dropdown-divider {
+      height: 1px;
+      background: var(--clr-grey-lt);
+      margin: 4px 0;
+    }
+
+    .user-dropdown i { width: 18px; text-align: center; font-size: .85rem; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      width: 40px; height: 40px;
+      padding: 8px;
+      border-radius: 50%;
+      transition: background var(--transition);
+    }
+
+    .hamburger:hover { background: rgba(76,175,80,.1); }
+
+    .hamburger span {
+      display: block;
+      height: 2px;
+      background: var(--clr-dark);
+      border-radius: 2px;
+      transition: transform var(--transition), opacity var(--transition);
+    }
+
+    .hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.active span:nth-child(2) { opacity: 0; }
+    .hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile Nav */
+    .mobile-nav {
+      position: fixed;
+      top: var(--header-h);
+      left: 0; right: 0; bottom: 0;
+      background: var(--clr-white);
+      z-index: 999;
+      padding: 24px;
+      transform: translateX(100%);
+      transition: transform .4s cubic-bezier(.4,0,.2,1);
+      overflow-y: auto;
+    }
+
+    .mobile-nav.open { transform: translateX(0); }
+
+    .mobile-nav a {
+      display: block;
+      font-size: 1.1rem;
+      font-weight: 500;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--clr-grey-lt);
+      color: var(--clr-dark);
+    }
+
+    .mobile-nav a:hover { color: var(--clr-primary); }
+
+    .mobile-nav .mobile-auth {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .mobile-nav .mobile-auth a {
+      text-align: center;
+      border: none;
+      padding: 12px;
+      border-radius: var(--radius);
+      font-weight: 600;
+    }
+
+    .mobile-nav .mobile-auth .btn-primary-m {
+      background: var(--clr-primary);
+      color: var(--clr-white);
+    }
+
+    .mobile-nav .mobile-auth .btn-outline-m {
+      border: 2px solid var(--clr-primary);
+      color: var(--clr-primary);
+    }
+
+    /* ================================================================
+       FLASH MESSAGES
+       ================================================================ */
+    .flash-container {
+      position: fixed;
+      top: calc(var(--header-h) + 12px);
+      right: 16px;
+      z-index: 1050;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-width: 420px;
+      width: 100%;
+    }
+
+    .flash-msg {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      background: var(--clr-white);
+      box-shadow: var(--shadow-md);
+      border-left: 4px solid var(--clr-grey);
+      animation: flashIn .4s ease forwards;
+      font-size: .875rem;
+      line-height: 1.5;
+    }
+
+    .flash-msg.success { border-left-color: var(--clr-success); }
+    .flash-msg.danger  { border-left-color: var(--clr-danger);  }
+    .flash-msg.warning { border-left-color: var(--clr-warning); }
+    .flash-msg.info    { border-left-color: var(--clr-info);    }
+
+    .flash-msg i { margin-top: 2px; font-size: .95rem; }
+    .flash-msg.success i { color: var(--clr-success); }
+    .flash-msg.danger  i { color: var(--clr-danger);  }
+    .flash-msg.warning i { color: var(--clr-warning); }
+    .flash-msg.info    i { color: var(--clr-info);    }
+
+    .flash-msg .flash-text { flex: 1; }
+
+    .flash-close {
+      color: var(--clr-grey);
+      font-size: .85rem;
+      padding: 2px;
+      transition: color var(--transition);
+    }
+
+    .flash-close:hover { color: var(--clr-dark); }
+
+    @keyframes flashIn {
+      from { opacity: 0; transform: translateX(30px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ================================================================
+       MAIN CONTENT
+       ================================================================ */
+    .main-content {
+      min-height: calc(100vh - var(--header-h) - 80px);
+      padding-top: var(--header-h);
+    }
+
+    /* ================================================================
+       FOOTER
+       ================================================================ */
+    .site-footer {
+      background: var(--clr-dark);
+      color: rgba(255,255,255,.7);
+      padding: 64px 0 0;
+      margin-top: 80px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+      gap: 48px;
+    }
+
+    .footer-heading {
+      font-family: var(--ff-heading);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--clr-white);
+      margin-bottom: 20px;
+    }
+
+    .footer-about p {
+      font-size: .875rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 12px;
+    }
+
+    .footer-social a {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem;
+      color: rgba(255,255,255,.6);
+      transition: background var(--transition), color var(--transition), border-color var(--transition);
+    }
+
+    .footer-social a:hover {
+      background: var(--clr-primary);
+      border-color: var(--clr-primary);
+      color: var(--clr-white);
+    }
+
+    .footer-links li { margin-bottom: 10px; }
+
+    .footer-links a {
+      font-size: .875rem;
+      color: rgba(255,255,255,.6);
+      transition: color var(--transition), padding-left var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--clr-primary-lt);
+      padding-left: 4px;
+    }
+
+    /* Newsletter */
+    .newsletter-text {
+      font-size: .875rem;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .newsletter-form { display: flex; gap: 0; }
+
+    .newsletter-form input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.15);
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      background: rgba(255,255,255,.06);
+      color: var(--clr-white);
+      font-family: var(--ff-body);
+      font-size: .85rem;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .newsletter-form input::placeholder { color: rgba(255,255,255,.35); }
+    .newsletter-form input:focus { border-color: var(--clr-primary); }
+
+    .newsletter-form button {
+      padding: 10px 18px;
+      background: var(--clr-primary);
+      color: var(--clr-white);
+      font-weight: 600;
+      font-size: .8rem;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      transition: background var(--transition);
+    }
+
+    .newsletter-form button:hover { background: var(--clr-primary-dk); }
+
+    /* Footer Bottom */
+    .footer-bottom {
+      margin-top: 48px;
+      padding: 20px 0;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: .8rem;
+    }
+
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+
+    .footer-bottom-links a { color: rgba(255,255,255,.45); }
+    .footer-bottom-links a:hover { color: var(--clr-primary-lt); }
+
+    /* ================================================================
+       SCROLL ANIMATIONS
+       ================================================================ */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .6s ease, transform .6s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ================================================================
+       RESPONSIVE
+       ================================================================ */
+    @media (max-width: 1024px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 36px; }
+    }
+
+    @media (max-width: 768px) {
+      :root { --header-h: 62px; }
+
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+
+      .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+
+      .footer-bottom { flex-direction: column; gap: 10px; text-align: center; }
+
+      .search-overlay { padding-top: 80px; }
+      .search-box { margin: 0 16px; }
+
+      .flash-container { left: 16px; max-width: none; }
+    }
+
+    @media (max-width: 480px) {
+      .logo a { font-size: 1.2rem; }
+      .header-actions { gap: 4px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- ============================================================
+       YOGA LOADING OVERLAY — shows once per session
+       ============================================================ -->
+  <div class="yoga-overlay" id="yogaOverlay" aria-hidden="true">
+    <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Loading">
+      <!-- Tree pose silhouette -->
+      <g fill="var(--clr-primary)" opacity="0" id="yogaSvgGroup">
+        <!-- Head -->
+        <circle cx="60" cy="22" r="8"/>
+        <!-- Torso -->
+        <path d="M56 30 h8 l2 32 h-12 z"/>
+        <!-- Left leg (standing) -->
+        <path d="M56 62 l-2 36 c0 2 1 4 3 4 h4 c2 0 3-1 3-3 l-2-37z"/>
+        <!-- Right leg (bent – tree pose) -->
+        <path d="M64 62 q10-6 8 0 q-2 6-8 8z"/>
+        <!-- Arms raised overhead -->
+        <path d="M56 36 q-14-16-8-24 c1-1 3 0 3 1 q-2 10 9 19z"/>
+        <path d="M64 36 q14-16 8-24 c-1-1-3 0-3 1 q2 10-9 19z"/>
+        <!-- Small leaf accent -->
+        <path d="M54 6 q-6-6-4-2 q2 4 4 4 q-2-4 0-4 q4 0 2 4z" opacity=".5"/>
+      </g>
+    </svg>
+    <span class="yoga-text" id="yogaText">Namaste</span>
+  </div>
+
+  <!-- ============================================================
+       HEADER
+       ============================================================ -->
+  <header class="site-header" id="siteHeader">
+    <div class="container header-inner">
+
+      <!-- Logo -->
+      <div class="logo">
+        <a href="{{ url_for('blog.index') }}">
+          <svg class="logo-leaf" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M16 2C8 2 2 12 2 20c0 2 .5 4 1.5 5.5C6 22 10 16 16 14c6 2 10 8 12.5 11.5C29.5 24 30 22 30 20 30 12 24 2 16 2z"/>
+          </svg>
+          Contemporary Hippie
+        </a>
+      </div>
+
+      <!-- Main Navigation -->
+      <nav class="main-nav" aria-label="Primary">
+        <ul class="nav-links">
+          <li><a href="{{ url_for('blog.index') }}" class="{{ 'active' if request.endpoint == 'blog.index' }}">Home</a></li>
+          <li><a href="{{ url_for('blog.blog_list') }}" class="{{ 'active' if request.endpoint in ['blog.blog_list', 'blog.post_detail', 'blog.category'] }}">Blog</a></li>
+          <li><a href="{{ url_for('store.shop') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('store.') }}">Store</a></li>
+          <li><a href="{{ url_for('blog.about') }}" class="{{ 'active' if request.endpoint == 'blog.about' }}">About</a></li>
+          <li><a href="{{ url_for('blog.contact') }}" class="{{ 'active' if request.endpoint == 'blog.contact' }}">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <!-- Search -->
+        <button class="search-toggle" id="searchToggle" aria-label="Open search">
+          <i class="fas fa-search"></i>
+        </button>
+
+        <!-- Cart -->
+        <a href="{{ url_for('store.cart') }}" class="cart-btn" aria-label="Shopping cart">
+          <i class="fas fa-shopping-bag"></i>
+          <span class="cart-badge">{{ cart_count if cart_count else '' }}</span>
+        </a>
+
+        <!-- User Menu -->
+        <div class="user-dropdown-wrap">
+          <button class="user-menu-toggle" id="userMenuToggle" aria-label="User menu" aria-expanded="false">
+            <i class="fas fa-user"></i>
+          </button>
+          <div class="user-dropdown" role="menu">
+            {% if current_user.is_authenticated %}
+              <a href="{{ url_for('auth.profile') }}" role="menuitem"><i class="fas fa-user-circle"></i> Profile</a>
+              <a href="{{ url_for('store.orders') }}" role="menuitem"><i class="fas fa-box"></i> Orders</a>
+              {% if current_user.is_admin %}
+                <div class="dropdown-divider"></div>
+                <a href="{{ url_for('admin.dashboard') }}" role="menuitem"><i class="fas fa-tachometer-alt"></i> Admin Dashboard</a>
+              {% endif %}
+              <div class="dropdown-divider"></div>
+              <a href="{{ url_for('auth.logout') }}" role="menuitem"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            {% else %}
+              <a href="{{ url_for('auth.login') }}" role="menuitem"><i class="fas fa-sign-in-alt"></i> Login</a>
+              <a href="{{ url_for('auth.register') }}" role="menuitem"><i class="fas fa-user-plus"></i> Register</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Hamburger (mobile) -->
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Mobile Navigation -->
+  <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation">
+    <a href="{{ url_for('blog.index') }}">Home</a>
+    <a href="{{ url_for('blog.blog_list') }}">Blog</a>
+    <a href="{{ url_for('store.shop') }}">Store</a>
+    <a href="{{ url_for('blog.about') }}">About</a>
+    <a href="{{ url_for('blog.contact') }}">Contact</a>
+    <a href="{{ url_for('store.cart') }}"><i class="fas fa-shopping-bag"></i> Cart {% if cart_count %}({{ cart_count }}){% endif %}</a>
+    <div class="mobile-auth">
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('auth.profile') }}" class="btn-outline-m">Profile</a>
+        {% if current_user.is_admin %}
+          <a href="{{ url_for('admin.dashboard') }}" class="btn-outline-m">Admin</a>
+        {% endif %}
+        <a href="{{ url_for('auth.logout') }}" class="btn-primary-m">Logout</a>
+      {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn-outline-m">Login</a>
+        <a href="{{ url_for('auth.register') }}" class="btn-primary-m">Register</a>
+      {% endif %}
+    </div>
+  </nav>
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-box">
+      <form id="searchForm" action="{{ url_for('api.search') }}" method="GET" role="search">
+        <input type="text" name="q" id="searchInput" placeholder="Search articles, products…" autocomplete="off" aria-label="Search">
+        <button type="submit" aria-label="Search"><i class="fas fa-search"></i></button>
+      </form>
+      <div class="search-results-dropdown" id="searchResults"></div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       FLASH MESSAGES
+       ============================================================ -->
+  <div class="flash-container" id="flashContainer">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-msg {{ category }}" role="alert">
+            <i class="fas
+              {% if category == 'success' %}fa-check-circle
+              {% elif category == 'danger' %}fa-exclamation-circle
+              {% elif category == 'warning' %}fa-exclamation-triangle
+              {% elif category == 'info' %}fa-info-circle
+              {% else %}fa-bell{% endif %}
+            "></i>
+            <span class="flash-text">{{ message }}</span>
+            <button class="flash-close" aria-label="Dismiss"><i class="fas fa-times"></i></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- ============================================================
+       MAIN CONTENT
+       ============================================================ -->
+  <main class="main-content" id="mainContent">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+
+        <!-- About Column -->
+        <div class="footer-about">
+          <h3 class="footer-heading">Contemporary Hippie</h3>
+          <p>Bridging ancient wisdom with modern living. We curate the best in holistic health, organic wellness products, and mindful lifestyle guidance for the conscious consumer.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="X / Twitter" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>
+            <a href="#" aria-label="Pinterest" target="_blank" rel="noopener"><i class="fab fa-pinterest-p"></i></a>
+            <a href="#" aria-label="YouTube" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+          </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div>
+          <h3 class="footer-heading">Quick Links</h3>
+          <ul class="footer-links">
+            <li><a href="{{ url_for('blog.index') }}">Home</a></li>
+            <li><a href="{{ url_for('blog.blog_list') }}">Blog</a></li>
+            <li><a href="{{ url_for('store.shop') }}">Store</a></li>
+            <li><a href="{{ url_for('blog.about') }}">About Us</a></li>
+            <li><a href="{{ url_for('blog.contact') }}">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Store Categories -->
+        <div>
+          <h3 class="footer-heading">Store Categories</h3>
+          <ul class="footer-links">
+            {% for cat in product_categories %}
+              <li><a href="{{ url_for('store.shop', category=cat.slug) }}">{{ cat.name }}</a></li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div>
+          <h3 class="footer-heading">Stay in the Loop</h3>
+          <p class="newsletter-text">Subscribe to receive wellness tips, new product drops, and exclusive offers — straight to your inbox.</p>
+          <form class="newsletter-form" action="{{ url_for('blog.newsletter_subscribe') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="email" name="email" placeholder="Your email address" required aria-label="Email for newsletter">
+            <button type="submit">Subscribe</button>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom">
+        <span>&copy; 2025 Contemporary Hippie. All rights reserved.</span>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       SCRIPTS
+       ============================================================ -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+
+  <script>
+    /* =============================================================
+       YOGA LOADING OVERLAY — once per session via sessionStorage
+       ============================================================= */
+    (function () {
+      const overlay = document.getElementById('yogaOverlay');
+      if (!overlay) return;
+
+      if (sessionStorage.getItem('ch_loaded')) {
+        overlay.remove();
+        return;
+      }
+
+      const svgGroup = document.getElementById('yogaSvgGroup');
+      const yogaText = document.getElementById('yogaText');
+      const tl = gsap.timeline({
+        onComplete: function () {
+          gsap.to(overlay, {
+            opacity: 0,
+            duration: 0.5,
+            ease: 'power2.inOut',
+            onComplete: function () {
+              overlay.remove();
+              sessionStorage.setItem('ch_loaded', '1');
+            }
+          });
+        }
+      });
+
+      tl.to(svgGroup, { opacity: 1, duration: 0.6, ease: 'power2.out' })
+        .to(svgGroup, { y: -6, duration: 0.8, ease: 'sine.inOut', yoyo: true, repeat: 1 }, '-=0.1')
+        .to(yogaText, { opacity: 1, duration: 0.4, ease: 'power2.out' }, '-=1.2')
+        .to(yogaText, { opacity: 0, duration: 0.3 }, '+=0.2');
+    })();
+
+    /* =============================================================
+       HEADER SCROLL STATE
+       ============================================================= */
+    (function () {
+      var header = document.getElementById('siteHeader');
+      var scrolled = false;
+      window.addEventListener('scroll', function () {
+        var s = window.scrollY > 20;
+        if (s !== scrolled) {
+          scrolled = s;
+          header.classList.toggle('scrolled', s);
+        }
+      }, { passive: true });
+    })();
+
+    /* =============================================================
+       HAMBURGER MENU
+       ============================================================= */
+    (function () {
+      var btn = document.getElementById('hamburger');
+      var nav = document.getElementById('mobileNav');
+      btn.addEventListener('click', function () {
+        var open = nav.classList.toggle('open');
+        btn.classList.toggle('active', open);
+        btn.setAttribute('aria-expanded', open);
+        document.body.style.overflow = open ? 'hidden' : '';
+      });
+    })();
+
+    /* =============================================================
+       SEARCH OVERLAY
+       ============================================================= */
+    (function () {
+      var toggle = document.getElementById('searchToggle');
+      var overlay = document.getElementById('searchOverlay');
+      var input = document.getElementById('searchInput');
+      var results = document.getElementById('searchResults');
+      var debounce;
+
+      toggle.addEventListener('click', function () {
+        overlay.classList.add('open');
+        setTimeout(function () { input.focus(); }, 300);
+      });
+
+      overlay.addEventListener('click', function (e) {
+        if (e.target === overlay) overlay.classList.remove('open');
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') overlay.classList.remove('open');
+      });
+
+      /* Live search */
+      input.addEventListener('input', function () {
+        clearTimeout(debounce);
+        var q = input.value.trim();
+        if (q.length < 2) { results.innerHTML = ''; results.classList.remove('has-results'); return; }
+        debounce = setTimeout(function () {
+          fetch('{{ url_for("api.search") }}?q=' + encodeURIComponent(q))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+              if (!data.results || data.results.length === 0) {
+                results.innerHTML = '<div style="padding:14px 16px;color:var(--clr-grey);font-size:.875rem;">No results found.</div>';
+                results.classList.add('has-results');
+                return;
+              }
+              results.innerHTML = data.results.map(function (item) {
+                return '<a href="' + item.url + '" class="search-result-item">' +
+                  '<span class="result-type">' + item.type + '</span>' +
+                  '<span class="result-title">' + item.title + '</span></a>';
+              }).join('');
+              results.classList.add('has-results');
+            })
+            .catch(function () {
+              results.innerHTML = '';
+              results.classList.remove('has-results');
+            });
+        }, 280);
+      });
+    })();
+
+    /* =============================================================
+       USER DROPDOWN (click toggle for accessibility)
+       ============================================================= */
+    (function () {
+      var wrap = document.querySelector('.user-dropdown-wrap');
+      var btn = document.getElementById('userMenuToggle');
+      btn.addEventListener('click', function () {
+        var open = wrap.classList.toggle('open');
+        btn.setAttribute('aria-expanded', open);
+      });
+      document.addEventListener('click', function (e) {
+        if (!wrap.contains(e.target)) {
+          wrap.classList.remove('open');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+      });
+    })();
+
+    /* =============================================================
+       FLASH MESSAGE DISMISS
+       ============================================================= */
+    (function () {
+      document.getElementById('flashContainer').addEventListener('click', function (e) {
+        var btn = e.target.closest('.flash-close');
+        if (!btn) return;
+        var msg = btn.closest('.flash-msg');
+        msg.style.opacity = '0';
+        msg.style.transform = 'translateX(30px)';
+        setTimeout(function () { msg.remove(); }, 300);
+      });
+
+      /* Auto-dismiss after 6s */
+      document.querySelectorAll('.flash-msg').forEach(function (msg) {
+        setTimeout(function () {
+          if (msg.parentNode) {
+            msg.style.opacity = '0';
+            msg.style.transform = 'translateX(30px)';
+            setTimeout(function () { msg.remove(); }, 300);
+          }
+        }, 6000);
+      });
+    })();
+
+    /* =============================================================
+       GSAP SCROLL REVEAL ANIMATIONS
+       ============================================================= */
+    gsap.registerPlugin(ScrollTrigger);
+
+    gsap.utils.toArray('.reveal').forEach(function (el) {
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 88%',
+        onEnter: function () { el.classList.add('visible'); },
+        once: true
+      });
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
