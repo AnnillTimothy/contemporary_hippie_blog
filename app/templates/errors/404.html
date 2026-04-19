@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .error-section {
+    min-height: calc(100vh - var(--header-h) - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .error-content {
+    position: relative;
+    z-index: 1;
+    max-width: 560px;
+  }
+
+  /* Floating leaf decorations */
+  .error-leaves {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .error-leaf {
+    position: absolute;
+    color: var(--clr-primary);
+    opacity: 0.06;
+  }
+
+  .error-leaf--1 { font-size: 10rem; top: 5%; left: 5%; transform: rotate(-25deg); }
+  .error-leaf--2 { font-size: 7rem; top: 15%; right: 8%; transform: rotate(40deg); }
+  .error-leaf--3 { font-size: 8rem; bottom: 10%; left: 12%; transform: rotate(150deg); }
+  .error-leaf--4 { font-size: 6rem; bottom: 20%; right: 15%; transform: rotate(-60deg); }
+  .error-leaf--5 { font-size: 5rem; top: 45%; left: 50%; transform: translateX(-50%) rotate(20deg); }
+
+  .error-code {
+    font-family: var(--ff-heading);
+    font-size: 8rem;
+    font-weight: 700;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .error-icon {
+    font-size: 3rem;
+    color: var(--clr-primary);
+    margin-bottom: 16px;
+    opacity: 0.8;
+  }
+
+  .error-title {
+    font-family: var(--ff-heading);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 12px;
+  }
+
+  .error-message {
+    color: var(--clr-grey);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+
+  .btn-home {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-dk));
+    color: var(--clr-white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+
+  .btn-home:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(76, 175, 80, 0.3);
+    color: var(--clr-white);
+  }
+
+  .error-divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent));
+    border-radius: 2px;
+    margin: 0 auto 24px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="error-section">
+  <!-- Decorative leaves -->
+  <div class="error-leaves">
+    <i class="fa-solid fa-leaf error-leaf error-leaf--1" id="leaf1"></i>
+    <i class="fa-solid fa-seedling error-leaf error-leaf--2" id="leaf2"></i>
+    <i class="fa-solid fa-leaf error-leaf error-leaf--3" id="leaf3"></i>
+    <i class="fa-solid fa-cannabis error-leaf error-leaf--4" id="leaf4"></i>
+    <i class="fa-solid fa-clover error-leaf error-leaf--5" id="leaf5"></i>
+  </div>
+
+  <div class="error-content" id="errorContent">
+    <div class="error-code">404</div>
+    <div class="error-icon"><i class="fa-solid fa-compass"></i></div>
+    <h1 class="error-title">Lost in the Garden</h1>
+    <div class="error-divider"></div>
+    <p class="error-message">
+      The page you're looking for has wandered off the path.
+      Perhaps it's meditating somewhere — but we can guide you back.
+    </p>
+    <a href="{{ url_for('blog.index') }}" class="btn-home">
+      <i class="fa-solid fa-house"></i> Return Home
+    </a>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    if (typeof gsap === 'undefined') return;
+
+    gsap.from('#errorContent', {
+      y: 40, opacity: 0, duration: 0.9, ease: 'power3.out'
+    });
+
+    // Gentle floating animation for leaves
+    var leaves = document.querySelectorAll('.error-leaf');
+    leaves.forEach(function (leaf, i) {
+      gsap.to(leaf, {
+        y: 'random(-20, 20)',
+        x: 'random(-15, 15)',
+        rotation: 'random(-15, 15)',
+        duration: 'random(3, 5)',
+        ease: 'sine.inOut',
+        repeat: -1,
+        yoyo: true,
+        delay: i * 0.4
+      });
+    });
+  });
+</script>
+{% endblock %}

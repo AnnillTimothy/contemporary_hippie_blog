@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}Create Account — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .auth-section {
+    min-height: calc(100vh - var(--header-h) - 200px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 24px;
+  }
+
+  .auth-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 520px;
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .auth-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--clr-accent), var(--clr-primary));
+  }
+
+  .auth-card__icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--clr-accent), var(--clr-accent-dk));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: var(--clr-white);
+    font-size: 1.25rem;
+  }
+
+  .auth-card__title {
+    font-family: var(--ff-heading);
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--clr-dark);
+    margin-bottom: 6px;
+  }
+
+  .auth-card__subtitle {
+    text-align: center;
+    color: var(--clr-grey);
+    font-size: 0.9rem;
+    margin-bottom: 32px;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--clr-dark-soft);
+    margin-bottom: 6px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: 0.95rem;
+    color: var(--clr-dark);
+    background: var(--clr-light);
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+  }
+
+  .field-error {
+    display: block;
+    color: var(--clr-danger);
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+
+  .btn-auth {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--clr-accent), var(--clr-accent-dk));
+    color: var(--clr-white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+
+  .btn-auth:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(201, 165, 78, 0.35);
+  }
+
+  .auth-footer {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 0.9rem;
+    color: var(--clr-grey);
+  }
+
+  .auth-footer a {
+    color: var(--clr-accent-dk);
+    font-weight: 600;
+  }
+
+  .auth-footer a:hover {
+    color: var(--clr-accent);
+  }
+
+  .leaf-decoration {
+    position: absolute;
+    opacity: 0.04;
+    font-size: 8rem;
+    color: var(--clr-primary);
+    pointer-events: none;
+  }
+
+  .leaf-decoration--top { top: -20px; right: -20px; transform: rotate(30deg); }
+  .leaf-decoration--bottom { bottom: -20px; left: -20px; transform: rotate(-150deg); }
+
+  @media (max-width: 520px) {
+    .form-row { grid-template-columns: 1fr; }
+    .auth-card { padding: 36px 24px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="auth-section">
+  <div class="auth-card" id="authCard">
+    <i class="fa-solid fa-leaf leaf-decoration leaf-decoration--top"></i>
+    <i class="fa-solid fa-leaf leaf-decoration leaf-decoration--bottom"></i>
+
+    <div class="auth-card__icon">
+      <i class="fa-solid fa-seedling"></i>
+    </div>
+    <h1 class="auth-card__title">Join the Journey</h1>
+    <p class="auth-card__subtitle">Create your Contemporary Hippie account</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}" style="padding:10px 16px;border-radius:var(--radius);margin-bottom:16px;font-size:.875rem;
+            {% if category == 'danger' or category == 'error' %}background:#fdecea;color:var(--clr-danger);border:1px solid #f5c6cb;
+            {% elif category == 'success' %}background:#e8f5e9;color:var(--clr-primary-dk);border:1px solid #c8e6c9;
+            {% else %}background:#fff3cd;color:#856404;border:1px solid #ffeeba;{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('auth.register') }}">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username(class="form-input", placeholder="Choose a username") }}
+        {% for error in form.username.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.email.label }}
+        {{ form.email(class="form-input", placeholder="you@example.com") }}
+        {% for error in form.email.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          {{ form.first_name.label }}
+          {{ form.first_name(class="form-input", placeholder="First name") }}
+          {% for error in form.first_name.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.last_name.label }}
+          {{ form.last_name(class="form-input", placeholder="Last name") }}
+          {% for error in form.last_name.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password(class="form-input", placeholder="Create a password") }}
+        {% for error in form.password.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.password2.label }}
+        {{ form.password2(class="form-input", placeholder="Confirm your password") }}
+        {% for error in form.password2.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.submit(class="btn-auth") }}
+      </div>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a>
+    </p>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const card = document.getElementById('authCard');
+    if (card && typeof gsap !== 'undefined') {
+      gsap.from(card, {
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out'
+      });
+      gsap.from(card.querySelectorAll('.form-group'), {
+        y: 20,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.06,
+        delay: 0.3,
+        ease: 'power2.out'
+      });
+    }
+  });
+</script>
+{% endblock %}
