@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Orders — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-layout{display:flex;min-height:calc(100vh - var(--header-h))}
+  .admin-sidebar{width:250px;background:var(--clr-dark);color:#fff;padding:2rem 0;flex-shrink:0;position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto}
+  .admin-sidebar h2{font-family:var(--ff-heading);font-size:1.2rem;padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--clr-dark-soft);margin-bottom:1rem;color:var(--clr-accent)}
+  .admin-sidebar nav a{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.9rem;transition:var(--transition)}
+  .admin-sidebar nav a:hover,.admin-sidebar nav a.active{background:var(--clr-dark-soft);color:#fff;border-left:3px solid var(--clr-primary)}
+  .admin-sidebar nav a i{width:20px;text-align:center}
+  .admin-main{flex:1;padding:2rem 2.5rem;background:var(--clr-light);min-width:0}
+  .admin-page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem}
+  .admin-page-header h1{font-family:var(--ff-heading);font-size:1.8rem;color:var(--clr-dark)}
+  .filter-bar{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+  .filter-bar label{font-weight:600;font-size:.85rem;color:var(--clr-dark)}
+  .filter-bar select{padding:.5rem 1rem;border:1px solid var(--clr-grey-lt);border-radius:var(--radius);font-size:.85rem;font-family:var(--ff-body);background:var(--clr-white);cursor:pointer}
+  .admin-card{background:var(--clr-white);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden}
+  .admin-table{width:100%;border-collapse:collapse}
+  .admin-table th{text-align:left;padding:.85rem 1.5rem;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px;color:var(--clr-grey);background:var(--clr-light);border-bottom:1px solid var(--clr-grey-lt)}
+  .admin-table td{padding:.85rem 1.5rem;border-bottom:1px solid var(--clr-grey-lt);font-size:.9rem;color:var(--clr-dark)}
+  .admin-table tr:last-child td{border-bottom:none}
+  .admin-table tr:hover td{background:rgba(76,175,80,.03)}
+  .badge{display:inline-block;padding:.25rem .65rem;border-radius:50px;font-size:.75rem;font-weight:600;text-transform:capitalize}
+  .badge-success{background:rgba(76,175,80,.12);color:var(--clr-primary)}
+  .badge-warning{background:rgba(243,156,18,.12);color:var(--clr-warning)}
+  .badge-danger{background:rgba(231,76,60,.12);color:var(--clr-danger)}
+  .badge-info{background:rgba(52,152,219,.12);color:var(--clr-info)}
+  .btn-primary{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;background:var(--clr-primary);color:#fff;border:none;border-radius:var(--radius);font-size:.85rem;font-weight:500;cursor:pointer;text-decoration:none;transition:var(--transition)}
+  .btn-primary:hover{background:var(--clr-primary-dk)}
+  .pagination{display:flex;justify-content:center;gap:.5rem;margin-top:2rem}
+  .pagination a,.pagination span{padding:.5rem .85rem;border-radius:var(--radius);font-size:.85rem;text-decoration:none;border:1px solid var(--clr-grey-lt);color:var(--clr-dark);background:var(--clr-white);transition:var(--transition)}
+  .pagination a:hover{background:var(--clr-primary);color:#fff;border-color:var(--clr-primary)}
+  .pagination .current{background:var(--clr-primary);color:#fff;border-color:var(--clr-primary)}
+  .pagination .disabled{opacity:.4;pointer-events:none}
+
+  @media(max-width:768px){
+    .admin-layout{flex-direction:column}
+    .admin-sidebar{width:100%;height:auto;position:relative;top:0}
+    .admin-sidebar nav{display:flex;flex-wrap:wrap;gap:.25rem;padding:0 1rem 1rem}
+    .admin-sidebar nav a{padding:.5rem .75rem;font-size:.8rem}
+    .admin-main{padding:1.5rem}
+    .admin-table{display:block;overflow-x:auto}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2><i class="fas fa-leaf"></i> Admin Panel</h2>
+    <nav>
+      <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="{{ url_for('admin.posts') }}"><i class="fas fa-pen-fancy"></i> Posts</a>
+      <a href="{{ url_for('admin.ai_generate') }}"><i class="fas fa-robot"></i> AI Generate</a>
+      <a href="{{ url_for('admin.products') }}"><i class="fas fa-box-open"></i> Products</a>
+      <a href="{{ url_for('admin.orders') }}" class="active"><i class="fas fa-shopping-bag"></i> Orders</a>
+      <a href="{{ url_for('admin.comments') }}"><i class="fas fa-comments"></i> Comments</a>
+      <a href="{{ url_for('admin.messages') }}"><i class="fas fa-envelope"></i> Messages</a>
+      <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i> Users</a>
+      <a href="{{ url_for('admin.subscribers') }}"><i class="fas fa-bell"></i> Subscribers</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-page-header">
+      <h1>Orders</h1>
+    </div>
+
+    <div class="filter-bar">
+      <label for="status-filter"><i class="fas fa-filter"></i> Filter by Status:</label>
+      <select id="status-filter" onchange="window.location.href=this.value">
+        <option value="{{ url_for('admin.orders') }}" {% if not request.args.get('status') %}selected{% endif %}>All Orders</option>
+        <option value="{{ url_for('admin.orders', status='pending') }}" {% if request.args.get('status') == 'pending' %}selected{% endif %}>Pending</option>
+        <option value="{{ url_for('admin.orders', status='confirmed') }}" {% if request.args.get('status') == 'confirmed' %}selected{% endif %}>Confirmed</option>
+        <option value="{{ url_for('admin.orders', status='processing') }}" {% if request.args.get('status') == 'processing' %}selected{% endif %}>Processing</option>
+        <option value="{{ url_for('admin.orders', status='shipped') }}" {% if request.args.get('status') == 'shipped' %}selected{% endif %}>Shipped</option>
+        <option value="{{ url_for('admin.orders', status='delivered') }}" {% if request.args.get('status') == 'delivered' %}selected{% endif %}>Delivered</option>
+        <option value="{{ url_for('admin.orders', status='cancelled') }}" {% if request.args.get('status') == 'cancelled' %}selected{% endif %}>Cancelled</option>
+      </select>
+    </div>
+
+    <div class="admin-card">
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Status</th>
+            <th>Payment</th>
+            <th>Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for order in orders %}
+          <tr>
+            <td><strong>{{ order.order_number }}</strong></td>
+            <td>{{ order.customer.full_name }}</td>
+            <td>${{ "%.2f"|format(order.total) }}</td>
+            <td>
+              {% if order.status == 'delivered' %}
+                <span class="badge badge-success">{{ order.status }}</span>
+              {% elif order.status == 'cancelled' %}
+                <span class="badge badge-danger">{{ order.status }}</span>
+              {% elif order.status in ['pending', 'processing'] %}
+                <span class="badge badge-warning">{{ order.status }}</span>
+              {% else %}
+                <span class="badge badge-info">{{ order.status }}</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if order.payment_status == 'paid' %}
+                <span class="badge badge-success">Paid</span>
+              {% else %}
+                <span class="badge badge-warning">{{ order.payment_status }}</span>
+              {% endif %}
+            </td>
+            <td>{{ order.created_at.strftime('%b %d, %Y') }}</td>
+            <td>
+              <a href="{{ url_for('admin.order_detail', id=order.id) }}" class="btn-primary"><i class="fas fa-eye"></i> View</a>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="7" style="text-align:center;color:var(--clr-grey);padding:2rem">No orders found</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if pagination and pagination.pages > 1 %}
+    <div class="pagination">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('admin.orders', page=pagination.prev_num, status=request.args.get('status', '')) }}">← Prev</a>
+      {% else %}
+        <span class="disabled">← Prev</span>
+      {% endif %}
+      {% for p in pagination.iter_pages() %}
+        {% if p %}
+          {% if p == pagination.page %}
+            <span class="current">{{ p }}</span>
+          {% else %}
+            <a href="{{ url_for('admin.orders', page=p, status=request.args.get('status', '')) }}">{{ p }}</a>
+          {% endif %}
+        {% else %}
+          <span>…</span>
+        {% endif %}
+      {% endfor %}
+      {% if pagination.has_next %}
+        <a href="{{ url_for('admin.orders', page=pagination.next_num, status=request.args.get('status', '')) }}">Next →</a>
+      {% else %}
+        <span class="disabled">Next →</span>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

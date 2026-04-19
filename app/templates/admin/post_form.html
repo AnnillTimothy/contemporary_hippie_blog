@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-layout{display:flex;min-height:calc(100vh - var(--header-h))}
+  .admin-sidebar{width:250px;background:var(--clr-dark);color:#fff;padding:2rem 0;flex-shrink:0;position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto}
+  .admin-sidebar h2{font-family:var(--ff-heading);font-size:1.2rem;padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--clr-dark-soft);margin-bottom:1rem;color:var(--clr-accent)}
+  .admin-sidebar nav a{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.9rem;transition:var(--transition)}
+  .admin-sidebar nav a:hover,.admin-sidebar nav a.active{background:var(--clr-dark-soft);color:#fff;border-left:3px solid var(--clr-primary)}
+  .admin-sidebar nav a i{width:20px;text-align:center}
+  .admin-main{flex:1;padding:2rem 2.5rem;background:var(--clr-light);min-width:0}
+  .admin-page-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+  .admin-page-header h1{font-family:var(--ff-heading);font-size:1.8rem;color:var(--clr-dark)}
+  .form-card{background:var(--clr-white);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:2rem;max-width:900px}
+  .form-group{margin-bottom:1.5rem}
+  .form-group label{display:block;margin-bottom:.5rem;font-weight:600;font-size:.9rem;color:var(--clr-dark)}
+  .form-group input[type="text"],.form-group input[type="url"],.form-group textarea,.form-group select,.form-group input[type="file"]{width:100%;padding:.7rem 1rem;border:1px solid var(--clr-grey-lt);border-radius:var(--radius);font-size:.9rem;font-family:var(--ff-body);background:var(--clr-white);transition:var(--transition)}
+  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{outline:none;border-color:var(--clr-primary);box-shadow:0 0 0 3px rgba(76,175,80,.15)}
+  .form-group textarea{resize:vertical}
+  .form-group select[multiple]{height:auto;min-height:120px}
+  .form-check{display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem}
+  .form-check input[type="checkbox"]{width:18px;height:18px;accent-color:var(--clr-primary)}
+  .form-check label{font-weight:500;font-size:.9rem;margin-bottom:0}
+  .form-hint{font-size:.8rem;color:var(--clr-grey);margin-top:.35rem}
+  .form-errors{color:var(--clr-danger);font-size:.8rem;margin-top:.35rem}
+  .current-image{margin-top:.75rem}
+  .current-image img{max-width:200px;border-radius:var(--radius);border:1px solid var(--clr-grey-lt)}
+  .btn-primary{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 2rem;background:var(--clr-primary);color:#fff;border:none;border-radius:var(--radius);font-size:.95rem;font-weight:600;cursor:pointer;transition:var(--transition)}
+  .btn-primary:hover{background:var(--clr-primary-dk)}
+  .btn-secondary{display:inline-flex;align-items:center;gap:.5rem;padding:.65rem 1.4rem;background:var(--clr-grey-lt);color:var(--clr-dark);border:none;border-radius:var(--radius);font-size:.9rem;cursor:pointer;text-decoration:none;transition:var(--transition)}
+  .btn-secondary:hover{background:var(--clr-grey)}
+  .form-actions{display:flex;gap:1rem;align-items:center;margin-top:2rem}
+
+  @media(max-width:768px){
+    .admin-layout{flex-direction:column}
+    .admin-sidebar{width:100%;height:auto;position:relative;top:0}
+    .admin-sidebar nav{display:flex;flex-wrap:wrap;gap:.25rem;padding:0 1rem 1rem}
+    .admin-sidebar nav a{padding:.5rem .75rem;font-size:.8rem}
+    .admin-main{padding:1.5rem}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2><i class="fas fa-leaf"></i> Admin Panel</h2>
+    <nav>
+      <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="{{ url_for('admin.posts') }}" class="active"><i class="fas fa-pen-fancy"></i> Posts</a>
+      <a href="{{ url_for('admin.ai_generate') }}"><i class="fas fa-robot"></i> AI Generate</a>
+      <a href="{{ url_for('admin.products') }}"><i class="fas fa-box-open"></i> Products</a>
+      <a href="{{ url_for('admin.orders') }}"><i class="fas fa-shopping-bag"></i> Orders</a>
+      <a href="{{ url_for('admin.comments') }}"><i class="fas fa-comments"></i> Comments</a>
+      <a href="{{ url_for('admin.messages') }}"><i class="fas fa-envelope"></i> Messages</a>
+      <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i> Users</a>
+      <a href="{{ url_for('admin.subscribers') }}"><i class="fas fa-bell"></i> Subscribers</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-page-header">
+      <h1>{{ title }}</h1>
+      <a href="{{ url_for('admin.posts') }}" class="btn-secondary"><i class="fas fa-arrow-left"></i> Back to Posts</a>
+    </div>
+
+    <div class="form-card">
+      <form method="POST" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+
+        <div class="form-group">
+          {{ form.title.label }}
+          {{ form.title(class="", placeholder="Enter post title") }}
+          {% for error in form.title.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.excerpt.label }}
+          {{ form.excerpt(rows=3, placeholder="Brief summary of the post") }}
+          {% for error in form.excerpt.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.content.label }}
+          {{ form.content(rows=18, placeholder="Write your post content here…") }}
+          {% for error in form.content.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.featured_image.label }}
+          {{ form.featured_image() }}
+          <p class="form-hint">Upload a featured image (JPG, PNG, WebP)</p>
+          {% if post is defined and post and post.featured_image %}
+          <div class="current-image">
+            <p style="font-size:.85rem;margin-bottom:.35rem;color:var(--clr-grey)">Current image:</p>
+            <img src="{{ post.featured_image }}" alt="Current featured image">
+          </div>
+          {% endif %}
+          {% for error in form.featured_image.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.categories.label }}
+          {{ form.categories() }}
+          <p class="form-hint">Hold Ctrl/Cmd to select multiple categories</p>
+          {% for error in form.categories.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-check">
+          {{ form.is_published() }}
+          {{ form.is_published.label }}
+        </div>
+
+        <div class="form-check">
+          {{ form.is_featured() }}
+          {{ form.is_featured.label }}
+        </div>
+
+        <div class="form-group">
+          {{ form.meta_description.label }}
+          {{ form.meta_description(rows=2, placeholder="SEO meta description") }}
+          <p class="form-hint">Recommended: 150-160 characters</p>
+          {% for error in form.meta_description.errors %}<p class="form-errors">{{ error }}</p>{% endfor %}
+        </div>
+
+        <div class="form-actions">
+          {{ form.submit(class="btn-primary") }}
+          <a href="{{ url_for('admin.posts') }}" class="btn-secondary">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
