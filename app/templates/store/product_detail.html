@@ -321,7 +321,7 @@
           <div class="pd-atc">
             <div class="qty-wrap">
               <button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button>
-              <input type="number" name="quantity" id="qtyInput" value="1" min="1" max="{{ product.stock }}">
+              <input type="number" name="quantity" id="qtyInput" value="1" min="1" max="{{ product.stock }}" aria-label="Quantity">
               <button type="button" id="qtyPlus" aria-label="Increase quantity">+</button>
             </div>
             <button type="submit" class="btn-atc" {{ 'disabled' if not product.in_stock }}>
