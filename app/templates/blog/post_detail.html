@@ -1,0 +1,764 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }} — Contemporary Hippie{% endblock %}
+{% block meta_description %}{{ post.excerpt|truncate(160) }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Cinematic Hero ── */
+  .post-hero {
+    position: relative;
+    height: clamp(400px, 60vh, 620px);
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+  .post-hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+  .post-hero__bg img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .post-hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(26,26,26,.85) 0%, rgba(26,26,26,.2) 50%, transparent 100%);
+    z-index: 1;
+  }
+  .post-hero__content {
+    position: relative;
+    z-index: 2;
+    padding: 0 0 48px;
+    width: 100%;
+  }
+  .post-hero__cats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .post-hero__cat {
+    display: inline-block;
+    padding: 5px 14px;
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border-radius: 20px;
+  }
+  .post-hero__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.8rem, 4.5vw, 3rem);
+    font-weight: 700;
+    color: var(--clr-white);
+    line-height: 1.15;
+    max-width: 780px;
+    margin-bottom: 20px;
+  }
+  .post-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: .85rem;
+    color: rgba(255,255,255,.75);
+  }
+  .post-hero__meta i { margin-right: 6px; color: var(--clr-primary-lt); }
+
+  /* ── Article Layout ── */
+  .article-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 64px 24px 80px;
+  }
+
+  /* ── Article Content ── */
+  .article-content {
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--clr-dark-soft);
+  }
+  .article-content h2 {
+    font-family: var(--ff-heading);
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin: 48px 0 18px;
+    line-height: 1.3;
+  }
+  .article-content h3 {
+    font-family: var(--ff-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin: 36px 0 14px;
+    line-height: 1.35;
+  }
+  .article-content p { margin-bottom: 22px; }
+  .article-content img {
+    border-radius: var(--radius-lg);
+    margin: 32px 0;
+  }
+  .article-content blockquote {
+    border-left: 3px solid var(--clr-accent);
+    padding: 20px 28px;
+    margin: 32px 0;
+    background: var(--clr-light-warm);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-family: var(--ff-heading);
+    font-style: italic;
+    font-size: 1.15rem;
+    color: var(--clr-dark);
+    line-height: 1.7;
+  }
+  .article-content ul,
+  .article-content ol {
+    margin: 0 0 22px 24px;
+    list-style: disc;
+  }
+  .article-content ol { list-style: decimal; }
+  .article-content li { margin-bottom: 8px; }
+
+  /* ── Mid-Article Products ── */
+  .inline-products {
+    margin: 48px 0;
+    padding: 36px;
+    background: var(--clr-light-warm);
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(201,165,78,.15);
+  }
+  .inline-products__kicker {
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--clr-accent);
+    margin-bottom: 8px;
+  }
+  .inline-products__title {
+    font-family: var(--ff-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 24px;
+  }
+  .inline-products__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 20px;
+  }
+  .inline-product {
+    background: var(--clr-white);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .inline-product:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+  }
+  .inline-product__img {
+    aspect-ratio: 1;
+    overflow: hidden;
+  }
+  .inline-product__img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .inline-product:hover .inline-product__img img { transform: scale(1.06); }
+  .inline-product__body { padding: 14px; }
+  .inline-product__name {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+  .inline-product__price {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    margin-bottom: 10px;
+  }
+  .inline-product__price .old-price {
+    text-decoration: line-through;
+    color: var(--clr-grey);
+    font-weight: 400;
+    margin-left: 4px;
+  }
+  .inline-product__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    transition: gap var(--transition);
+  }
+  .inline-product__btn:hover { gap: 10px; }
+
+  /* ── Share & Tags ── */
+  .article-footer {
+    margin-top: 48px;
+    padding-top: 32px;
+    border-top: 1px solid var(--clr-grey-lt);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .article-tags a {
+    padding: 5px 14px;
+    font-size: .75rem;
+    font-weight: 500;
+    border-radius: 20px;
+    border: 1px solid var(--clr-grey-lt);
+    color: var(--clr-grey);
+    transition: all var(--transition);
+  }
+  .article-tags a:hover {
+    border-color: var(--clr-primary);
+    color: var(--clr-primary);
+    background: rgba(76,175,80,.06);
+  }
+  .article-share {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .article-share span {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-grey);
+  }
+  .article-share a {
+    width: 36px; height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--clr-grey-lt);
+    color: var(--clr-grey);
+    font-size: .85rem;
+    transition: all var(--transition);
+  }
+  .article-share a:hover {
+    background: var(--clr-primary);
+    border-color: var(--clr-primary);
+    color: var(--clr-white);
+  }
+
+  /* ── Author Box ── */
+  .author-box {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-top: 48px;
+    padding: 28px;
+    background: var(--clr-light-warm);
+    border-radius: var(--radius-lg);
+  }
+  .author-box__avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ff-heading);
+    font-size: 1.4rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .author-box__name {
+    font-family: var(--ff-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 4px;
+  }
+  .author-box__bio {
+    font-size: .85rem;
+    color: var(--clr-grey);
+    line-height: 1.6;
+  }
+
+  /* ── Comments ── */
+  .comments-section {
+    margin-top: 64px;
+    padding-top: 48px;
+    border-top: 1px solid var(--clr-grey-lt);
+  }
+  .section-kicker {
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--clr-primary);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: var(--ff-heading);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 32px;
+  }
+  .comment {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(0,0,0,.05);
+  }
+  .comment:last-child { border-bottom: none; }
+  .comment__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .comment__avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--clr-light-warm);
+    color: var(--clr-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .85rem;
+  }
+  .comment__name {
+    font-weight: 600;
+    font-size: .9rem;
+    color: var(--clr-dark);
+  }
+  .comment__date {
+    font-size: .75rem;
+    color: var(--clr-grey);
+  }
+  .comment__body {
+    font-size: .9rem;
+    line-height: 1.7;
+    color: var(--clr-dark-soft);
+    padding-left: 52px;
+  }
+
+  /* ── Comment Form ── */
+  .comment-form { margin-top: 36px; }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: .9rem;
+    color: var(--clr-dark);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    background: var(--clr-white);
+  }
+  .form-group input:focus,
+  .form-group textarea:focus {
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 3px rgba(76,175,80,.1);
+  }
+  .form-group textarea { min-height: 140px; resize: vertical; }
+  .form-group .error-text {
+    color: var(--clr-danger);
+    font-size: .75rem;
+    margin-top: 4px;
+  }
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-weight: 600;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+  }
+  .btn-submit:hover {
+    background: var(--clr-primary-dk);
+    transform: translateY(-1px);
+  }
+
+  /* ── Related Posts ── */
+  .related-section {
+    padding: 80px 0;
+    background: var(--clr-light-warm);
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+    margin-top: 32px;
+  }
+  .related-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .related-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .related-card__img {
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+  .related-card__img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .related-card:hover .related-card__img img { transform: scale(1.05); }
+  .related-card__body { padding: 20px; }
+  .related-card__meta {
+    font-size: .75rem;
+    color: var(--clr-grey);
+    margin-bottom: 8px;
+  }
+  .related-card__title {
+    font-family: var(--ff-heading);
+    font-size: 1.05rem;
+    font-weight: 600;
+    line-height: 1.35;
+    color: var(--clr-dark);
+  }
+  .related-card__title:hover { color: var(--clr-primary); }
+
+  /* ── Bottom Products ── */
+  .bottom-products {
+    padding: 80px 0;
+  }
+  .bottom-products__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 24px;
+    margin-top: 32px;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .post-hero { height: clamp(300px, 50vh, 450px); }
+    .form-row { grid-template-columns: 1fr; }
+    .related-grid { grid-template-columns: 1fr; }
+    .article-wrap { padding: 40px 16px 60px; }
+    .author-box { flex-direction: column; text-align: center; }
+    .comment__body { padding-left: 0; }
+  }
+  @media (max-width: 640px) {
+    .inline-products__grid { grid-template-columns: repeat(2, 1fr); }
+    .bottom-products__grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ── Cinematic Hero ── -->
+<section class="post-hero" id="postHero">
+  <div class="post-hero__bg" id="heroBg">
+    <img src="{{ url_for('static', filename=post.featured_image) if post.featured_image else url_for('static', filename='images/placeholder.png') }}"
+         alt="{{ post.title }}">
+  </div>
+  <div class="post-hero__overlay"></div>
+  <div class="post-hero__content container">
+    {% if post.categories %}
+    <div class="post-hero__cats">
+      {% for cat in post.categories %}
+        <a href="{{ url_for('blog.category', slug=cat.slug) }}" class="post-hero__cat">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <h1 class="post-hero__title" id="heroTitle">{{ post.title }}</h1>
+    <div class="post-hero__meta">
+      <span><i class="far fa-user"></i> {{ post.author.full_name }}</span>
+      <span><i class="far fa-calendar"></i> {{ post.published_at.strftime('%B %d, %Y') if post.published_at else '' }}</span>
+      <span><i class="far fa-clock"></i> {{ post.reading_time }} min read</span>
+      <span><i class="far fa-eye"></i> {{ post.views }} views</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── Article ── -->
+<article class="article-wrap">
+
+  <div class="article-content reveal" id="articleBody">
+    {{ post.content|safe }}
+  </div>
+
+  <!-- Mid-Article Products -->
+  {% if suggested_products %}
+  <aside class="inline-products reveal">
+    <span class="inline-products__kicker">Mentioned in this article</span>
+    <h3 class="inline-products__title">Products We Love</h3>
+    <div class="inline-products__grid">
+      {% for product in suggested_products[:4] %}
+      <div class="inline-product">
+        <a href="{{ url_for('store.product_detail', slug=product.slug) }}" class="inline-product__img">
+          <img src="{{ url_for('static', filename=product.image) if product.image else url_for('static', filename='images/placeholder.png') }}"
+               alt="{{ product.name }}" loading="lazy">
+        </a>
+        <div class="inline-product__body">
+          <div class="inline-product__name">{{ product.name }}</div>
+          <div class="inline-product__price">
+            ${{ "%.2f"|format(product.current_price) }}
+            {% if product.is_on_sale %}
+              <span class="old-price">${{ "%.2f"|format(product.price) }}</span>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('store.product_detail', slug=product.slug) }}" class="inline-product__btn">
+            View Product <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </aside>
+  {% endif %}
+
+  <!-- Article Footer -->
+  <div class="article-footer reveal">
+    <div class="article-tags">
+      {% if post.categories %}
+        {% for cat in post.categories %}
+          <a href="{{ url_for('blog.category', slug=cat.slug) }}">{{ cat.name }}</a>
+        {% endfor %}
+      {% endif %}
+    </div>
+    <div class="article-share">
+      <span>Share</span>
+      <a href="https://twitter.com/intent/tweet?text={{ post.title|urlencode }}" target="_blank" rel="noopener" aria-label="Share on Twitter"><i class="fab fa-x-twitter"></i></a>
+      <a href="https://www.facebook.com/sharer/sharer.php" target="_blank" rel="noopener" aria-label="Share on Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://pinterest.com/pin/create/button/" target="_blank" rel="noopener" aria-label="Share on Pinterest"><i class="fab fa-pinterest-p"></i></a>
+    </div>
+  </div>
+
+  <!-- Author Box -->
+  <div class="author-box reveal">
+    <div class="author-box__avatar">{{ post.author.full_name[0] }}</div>
+    <div>
+      <div class="author-box__name">{{ post.author.full_name }}</div>
+      <p class="author-box__bio">Wellness writer and holistic health advocate at Contemporary Hippie — bridging ancient wisdom with modern science.</p>
+    </div>
+  </div>
+
+  <!-- Comments -->
+  <section class="comments-section" id="comments">
+    <span class="section-kicker">Join the conversation</span>
+    <h2 class="section-title">Comments ({{ comments|length }})</h2>
+
+    {% for comment in comments %}
+    <div class="comment reveal">
+      <div class="comment__header">
+        <div class="comment__avatar">{{ comment.author_name[0]|upper }}</div>
+        <div>
+          <div class="comment__name">{{ comment.author_name }}</div>
+          <div class="comment__date">{{ comment.created_at.strftime('%b %d, %Y') if comment.created_at else '' }}</div>
+        </div>
+      </div>
+      <div class="comment__body">{{ comment.body }}</div>
+    </div>
+    {% endfor %}
+
+    <!-- Comment Form -->
+    <div class="comment-form reveal">
+      <h3 class="section-title" style="font-size:1.2rem;">Leave a Comment</h3>
+      <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="form-row">
+          <div class="form-group">
+            <label for="{{ form.author_name.id }}">Name</label>
+            {{ form.author_name(class="", placeholder="Your name") }}
+            {% for error in form.author_name.errors %}
+              <div class="error-text">{{ error }}</div>
+            {% endfor %}
+          </div>
+          <div class="form-group">
+            <label for="{{ form.author_email.id }}">Email</label>
+            {{ form.author_email(class="", placeholder="Your email") }}
+            {% for error in form.author_email.errors %}
+              <div class="error-text">{{ error }}</div>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="{{ form.body.id }}">Comment</label>
+          {{ form.body(class="", placeholder="Share your thoughts…", rows=5) }}
+          {% for error in form.body.errors %}
+            <div class="error-text">{{ error }}</div>
+          {% endfor %}
+        </div>
+        <button type="submit" class="btn-submit">
+          <i class="far fa-comment"></i> Post Comment
+        </button>
+      </form>
+    </div>
+  </section>
+
+</article>
+
+<!-- ── Related Posts ── -->
+{% if related_posts %}
+<section class="related-section">
+  <div class="container">
+    <span class="section-kicker">Keep reading</span>
+    <h2 class="section-title">You Might Also Enjoy</h2>
+    <div class="related-grid">
+      {% for rp in related_posts[:3] %}
+      <article class="related-card reveal">
+        <a href="{{ url_for('blog.post_detail', slug=rp.slug) }}" class="related-card__img">
+          <img src="{{ url_for('static', filename=rp.featured_image) if rp.featured_image else url_for('static', filename='images/placeholder.png') }}"
+               alt="{{ rp.title }}" loading="lazy">
+        </a>
+        <div class="related-card__body">
+          <div class="related-card__meta">
+            {{ rp.published_at.strftime('%b %d, %Y') if rp.published_at else '' }} &middot; {{ rp.reading_time }} min read
+          </div>
+          <a href="{{ url_for('blog.post_detail', slug=rp.slug) }}">
+            <h3 class="related-card__title">{{ rp.title }}</h3>
+          </a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- ── Bottom Products CTA ── -->
+{% if suggested_products and suggested_products|length > 0 %}
+<section class="bottom-products">
+  <div class="container">
+    <span class="section-kicker">Complete your ritual</span>
+    <h2 class="section-title">Complete Your Wellness Routine</h2>
+    <div class="bottom-products__grid">
+      {% for product in suggested_products %}
+      <div class="inline-product reveal">
+        <a href="{{ url_for('store.product_detail', slug=product.slug) }}" class="inline-product__img">
+          <img src="{{ url_for('static', filename=product.image) if product.image else url_for('static', filename='images/placeholder.png') }}"
+               alt="{{ product.name }}" loading="lazy">
+        </a>
+        <div class="inline-product__body">
+          <div class="inline-product__name">{{ product.name }}</div>
+          <div class="inline-product__price">
+            ${{ "%.2f"|format(product.current_price) }}
+            {% if product.is_on_sale %}
+              <span class="old-price">${{ "%.2f"|format(product.price) }}</span>
+            {% endif %}
+          </div>
+          <a href="{{ url_for('store.product_detail', slug=product.slug) }}" class="inline-product__btn">
+            Shop Now <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Hero parallax */
+  gsap.to('#heroBg img', {
+    yPercent: 20,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#postHero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true
+    }
+  });
+
+  /* Hero title reveal */
+  gsap.from('#heroTitle', {
+    opacity: 0, y: 50, duration: 0.9, delay: 0.15, ease: 'power3.out'
+  });
+  gsap.from('.post-hero__cats', {
+    opacity: 0, y: 20, duration: 0.5, delay: 0.05, ease: 'power2.out'
+  });
+  gsap.from('.post-hero__meta', {
+    opacity: 0, y: 20, duration: 0.5, delay: 0.3, ease: 'power2.out'
+  });
+
+  /* Article body paragraphs */
+  gsap.utils.toArray('.article-content > *').forEach(function(el) {
+    gsap.from(el, {
+      scrollTrigger: { trigger: el, start: 'top 90%' },
+      opacity: 0, y: 20, duration: 0.5, ease: 'power2.out'
+    });
+  });
+
+  /* Inline products stagger */
+  gsap.utils.toArray('.inline-product').forEach(function(el, i) {
+    gsap.from(el, {
+      scrollTrigger: { trigger: el, start: 'top 85%' },
+      opacity: 0, y: 30, duration: 0.5, delay: i * 0.1, ease: 'power2.out'
+    });
+  });
+
+  /* Related cards stagger */
+  gsap.utils.toArray('.related-card').forEach(function(el, i) {
+    gsap.from(el, {
+      scrollTrigger: { trigger: el, start: 'top 85%' },
+      opacity: 0, y: 40, duration: 0.6, delay: i * 0.12, ease: 'power2.out'
+    });
+  });
+
+  /* Comments reveal */
+  gsap.utils.toArray('.comment').forEach(function(el, i) {
+    gsap.from(el, {
+      scrollTrigger: { trigger: el, start: 'top 90%' },
+      opacity: 0, x: -20, duration: 0.4, delay: i * 0.08, ease: 'power2.out'
+    });
+  });
+
+  /* Generic reveal */
+  gsap.utils.toArray('.reveal').forEach(function(el) {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: function() { el.classList.add('visible'); }
+    });
+  });
+</script>
+{% endblock %}

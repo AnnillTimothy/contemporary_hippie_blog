@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+
+{% block title %}Contact — Contemporary Hippie{% endblock %}
+{% block meta_description %}Get in touch with Contemporary Hippie. We'd love to hear from you — whether it's a question, collaboration, or just to say hello.{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Contact Hero ── */
+  .contact-hero {
+    padding: 110px 0 60px;
+    text-align: center;
+    background: linear-gradient(160deg, var(--clr-light) 0%, var(--clr-light-warm) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-hero::before {
+    content: '';
+    position: absolute;
+    bottom: -50%; right: -5%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(76,175,80,.07) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .contact-hero__kicker {
+    display: inline-block;
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--clr-primary);
+    margin-bottom: 14px;
+  }
+  .contact-hero__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    color: var(--clr-dark);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .contact-hero__subtitle {
+    max-width: 520px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+    color: var(--clr-grey);
+    line-height: 1.7;
+  }
+
+  /* ── Split Layout ── */
+  .contact-section {
+    padding: 64px 0 100px;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  /* ── Info Side ── */
+  .contact-info {
+    position: sticky;
+    top: calc(var(--header-h) + 32px);
+  }
+  .contact-info__kicker {
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--clr-accent);
+    margin-bottom: 10px;
+  }
+  .contact-info__title {
+    font-family: var(--ff-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--clr-dark);
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+  .contact-info__text {
+    font-size: .95rem;
+    line-height: 1.75;
+    color: var(--clr-dark-soft);
+    margin-bottom: 36px;
+  }
+  .contact-detail {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+  }
+  .contact-detail__icon {
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(76,175,80,.1);
+    color: var(--clr-primary);
+    font-size: .95rem;
+  }
+  .contact-detail__label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--clr-grey);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .contact-detail__value {
+    font-size: .95rem;
+    color: var(--clr-dark);
+    line-height: 1.5;
+  }
+
+  /* Social */
+  .contact-social {
+    display: flex;
+    gap: 10px;
+    margin-top: 36px;
+  }
+  .contact-social a {
+    width: 42px; height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid var(--clr-grey-lt);
+    color: var(--clr-grey);
+    font-size: .95rem;
+    transition: all var(--transition);
+  }
+  .contact-social a:hover {
+    background: var(--clr-primary);
+    border-color: var(--clr-primary);
+    color: var(--clr-white);
+  }
+
+  /* ── Form Side ── */
+  .contact-form-wrap {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-md);
+  }
+  .contact-form-wrap__title {
+    font-family: var(--ff-heading);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 28px;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 6px;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: .9rem;
+    color: var(--clr-dark);
+    outline: none;
+    background: var(--clr-light);
+    transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--clr-primary);
+    background: var(--clr-white);
+    box-shadow: 0 0 0 3px rgba(76,175,80,.1);
+  }
+  .form-group textarea {
+    min-height: 150px;
+    resize: vertical;
+  }
+  .form-group select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+  }
+  .form-group .error-text {
+    color: var(--clr-danger);
+    font-size: .75rem;
+    margin-top: 4px;
+  }
+  .btn-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 36px;
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-weight: 600;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+    width: 100%;
+    justify-content: center;
+  }
+  .btn-submit:hover {
+    background: var(--clr-primary-dk);
+    transform: translateY(-1px);
+  }
+  .form-note {
+    font-size: .75rem;
+    color: var(--clr-grey);
+    margin-top: 16px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .form-note i { color: var(--clr-primary); margin-right: 4px; }
+
+  /* ── FAQ Teaser ── */
+  .faq-teaser {
+    padding: 80px 0;
+    background: var(--clr-light-warm);
+    text-align: center;
+  }
+  .faq-teaser__title {
+    font-family: var(--ff-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--clr-dark);
+    margin-bottom: 12px;
+  }
+  .faq-teaser__text {
+    font-size: .95rem;
+    color: var(--clr-grey);
+    max-width: 480px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+  .faq-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .faq-card {
+    background: var(--clr-white);
+    padding: 28px 24px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    text-align: left;
+  }
+  .faq-card__q {
+    font-family: var(--ff-heading);
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 10px;
+    line-height: 1.35;
+  }
+  .faq-card__a {
+    font-size: .85rem;
+    line-height: 1.65;
+    color: var(--clr-grey);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+    .contact-info { position: static; }
+    .form-row { grid-template-columns: 1fr; }
+    .faq-grid { grid-template-columns: 1fr; max-width: 400px; }
+    .contact-form-wrap { padding: 28px 20px; }
+    .contact-hero { padding: 80px 0 40px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ── Hero ── -->
+<section class="contact-hero">
+  <div class="container">
+    <span class="contact-hero__kicker" id="contactKicker">Get in Touch</span>
+    <h1 class="contact-hero__title" id="contactTitle">We'd Love to Hear From You</h1>
+    <p class="contact-hero__subtitle" id="contactSub">
+      Whether you have a wellness question, a collaboration idea, or just want to say hello — our inbox is always open.
+    </p>
+  </div>
+</section>
+
+<!-- ── Contact Section ── -->
+<section class="contact-section">
+  <div class="container">
+    <div class="contact-grid">
+
+      <!-- Info Side -->
+      <div class="contact-info">
+        <span class="contact-info__kicker reveal">Let's connect</span>
+        <h2 class="contact-info__title reveal">Reach Out, We're Listening</h2>
+        <p class="contact-info__text reveal">
+          We read every message that comes our way. Whether you're curious about a product, interested in writing for us, or want to share your wellness story — don't be a stranger.
+        </p>
+
+        <div class="contact-detail reveal">
+          <div class="contact-detail__icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <div class="contact-detail__label">Email</div>
+            <div class="contact-detail__value">hello@contemporaryhippie.com</div>
+          </div>
+        </div>
+
+        <div class="contact-detail reveal">
+          <div class="contact-detail__icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div>
+            <div class="contact-detail__label">Location</div>
+            <div class="contact-detail__value">Austin, TX — working remotely from everywhere</div>
+          </div>
+        </div>
+
+        <div class="contact-detail reveal">
+          <div class="contact-detail__icon"><i class="fas fa-clock"></i></div>
+          <div>
+            <div class="contact-detail__label">Response Time</div>
+            <div class="contact-detail__value">Usually within 24–48 hours</div>
+          </div>
+        </div>
+
+        <div class="contact-social reveal">
+          <a href="#" aria-label="Instagram" target="_blank" rel="noopener"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Twitter" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i></a>
+          <a href="#" aria-label="Pinterest" target="_blank" rel="noopener"><i class="fab fa-pinterest-p"></i></a>
+          <a href="#" aria-label="YouTube" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+
+      <!-- Form Side -->
+      <div class="contact-form-wrap reveal" id="contactForm">
+        <h3 class="contact-form-wrap__title">Send Us a Message</h3>
+        <form method="POST" action="">
+          {{ form.hidden_tag() }}
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="{{ form.name.id }}">Name</label>
+              {{ form.name(class="", placeholder="Your full name") }}
+              {% for error in form.name.errors %}
+                <div class="error-text">{{ error }}</div>
+              {% endfor %}
+            </div>
+            <div class="form-group">
+              <label for="{{ form.email.id }}">Email</label>
+              {{ form.email(class="", placeholder="your@email.com") }}
+              {% for error in form.email.errors %}
+                <div class="error-text">{{ error }}</div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.reason.id }}">What's This About?</label>
+            {{ form.reason(class="") }}
+            {% for error in form.reason.errors %}
+              <div class="error-text">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <div class="form-group">
+            <label for="{{ form.message.id }}">Message</label>
+            {{ form.message(class="", placeholder="Tell us what's on your mind…", rows=6) }}
+            {% for error in form.message.errors %}
+              <div class="error-text">{{ error }}</div>
+            {% endfor %}
+          </div>
+
+          <button type="submit" class="btn-submit">
+            <i class="far fa-paper-plane"></i> Send Message
+          </button>
+
+          <p class="form-note">
+            <i class="fas fa-lock"></i> Your information is safe with us. We'll never share your details.
+          </p>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ── FAQ Teaser ── -->
+<section class="faq-teaser">
+  <div class="container">
+    <h2 class="faq-teaser__title reveal">Frequently Asked Questions</h2>
+    <p class="faq-teaser__text reveal">Quick answers to the things people ask us most.</p>
+    <div class="faq-grid">
+      <div class="faq-card reveal">
+        <h3 class="faq-card__q">Do you accept guest posts?</h3>
+        <p class="faq-card__a">
+          Yes! We love hearing from fellow wellness enthusiasts. Send us a pitch using the form above and select "Collaboration" as your topic.
+        </p>
+      </div>
+      <div class="faq-card reveal">
+        <h3 class="faq-card__q">How do you choose products?</h3>
+        <p class="faq-card__a">
+          Every product goes through our vetting process — ingredient quality, ethical sourcing, efficacy, and real-world testing by our team.
+        </p>
+      </div>
+      <div class="faq-card reveal">
+        <h3 class="faq-card__q">Can I work with your brand?</h3>
+        <p class="faq-card__a">
+          We're always open to partnerships that align with our values. Reach out with your proposal and we'll get back to you promptly.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Hero entrance */
+  var heroTl = gsap.timeline({ delay: 0.1 });
+  heroTl
+    .from('#contactKicker', { opacity: 0, y: 20, duration: 0.5 })
+    .from('#contactTitle', { opacity: 0, y: 35, duration: 0.65, ease: 'power3.out' }, '-=0.3')
+    .from('#contactSub', { opacity: 0, y: 20, duration: 0.5 }, '-=0.3');
+
+  /* Info side stagger */
+  gsap.utils.toArray('.contact-detail').forEach(function(el, i) {
+    gsap.from(el, {
+      scrollTrigger: { trigger: el, start: 'top 88%' },
+      opacity: 0, x: -25, duration: 0.5, delay: i * 0.1, ease: 'power2.out'
+    });
+  });
+
+  /* Social icons */
+  gsap.from('.contact-social a', {
+    scrollTrigger: { trigger: '.contact-social', start: 'top 90%' },
+    opacity: 0, y: 15, duration: 0.35, stagger: 0.07, ease: 'power2.out'
+  });
+
+  /* Form entrance */
+  gsap.from('#contactForm', {
+    scrollTrigger: { trigger: '#contactForm', start: 'top 80%' },
+    opacity: 0, y: 40, duration: 0.7, ease: 'power2.out'
+  });
+
+  /* FAQ cards */
+  gsap.utils.toArray('.faq-card').forEach(function(card, i) {
+    gsap.from(card, {
+      scrollTrigger: { trigger: card, start: 'top 85%' },
+      opacity: 0, y: 30, duration: 0.5, delay: i * 0.1, ease: 'power2.out'
+    });
+  });
+
+  /* Generic reveal */
+  gsap.utils.toArray('.reveal').forEach(function(el) {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: function() { el.classList.add('visible'); }
+    });
+  });
+</script>
+{% endblock %}
