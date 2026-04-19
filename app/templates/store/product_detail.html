@@ -1,0 +1,428 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} — Contemporary Hippie{% endblock %}
+{% block meta_description %}{{ product.short_description or product.name ~ ' — Shop premium wellness essentials at Contemporary Hippie.' }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Layout ──────────────────────────────────────── */
+  .pd { padding: 48px 0 80px; }
+  .pd-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+
+  /* ── Gallery ─────────────────────────────────────── */
+  .pd-gallery {}
+  .pd-gallery__main {
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--clr-light-warm);
+    aspect-ratio: 1/1;
+    margin-bottom: 12px;
+  }
+  .pd-gallery__main img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .pd-gallery__main:hover img { transform: scale(1.04); }
+  .pd-thumbs {
+    display: flex;
+    gap: 10px;
+  }
+  .pd-thumbs button {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color var(--transition);
+    background: var(--clr-light-warm);
+    padding: 0;
+  }
+  .pd-thumbs button.active,
+  .pd-thumbs button:hover {
+    border-color: var(--clr-accent);
+  }
+  .pd-thumbs button img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── Info Panel ──────────────────────────────────── */
+  .pd-info {}
+  .pd-breadcrumb {
+    font-size: .78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    color: var(--clr-grey);
+    margin-bottom: 12px;
+  }
+  .pd-breadcrumb a:hover { color: var(--clr-primary); }
+  .pd-info h1 {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+  .pd-price {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  .pd-price .old {
+    font-size: 1rem;
+    font-weight: 400;
+    text-decoration: line-through;
+    color: var(--clr-grey);
+  }
+  .pd-price .sale { color: var(--clr-danger); }
+  .pd-short {
+    font-size: .95rem;
+    color: var(--clr-dark-soft);
+    line-height: 1.7;
+    margin-bottom: 24px;
+  }
+  .pd-stock {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .8rem;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .pd-stock.in i { color: var(--clr-primary); }
+  .pd-stock.out i { color: var(--clr-danger); }
+
+  /* ── Add-to-Cart ─────────────────────────────────── */
+  .pd-atc {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+  .qty-wrap {
+    display: flex;
+    align-items: center;
+    border: 1.5px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .qty-wrap button {
+    width: 40px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    background: var(--clr-white);
+    transition: background var(--transition);
+  }
+  .qty-wrap button:hover { background: var(--clr-light-warm); }
+  .qty-wrap input {
+    width: 50px;
+    text-align: center;
+    font-family: var(--ff-body);
+    font-size: .95rem;
+    font-weight: 600;
+    border: none;
+    border-left: 1.5px solid var(--clr-grey-lt);
+    border-right: 1.5px solid var(--clr-grey-lt);
+    outline: none;
+  }
+  .btn-atc {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 0 32px;
+    height: 50px;
+    background: var(--clr-dark);
+    color: var(--clr-white);
+    font-size: .85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+  .btn-atc:hover { background: var(--clr-primary); }
+  .btn-atc:disabled {
+    background: var(--clr-grey-lt);
+    color: var(--clr-grey);
+    cursor: not-allowed;
+  }
+
+  /* ── Details Accordion ───────────────────────────── */
+  .pd-details { border-top: 1px solid var(--clr-grey-lt); }
+  .pd-details__toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 0;
+    font-family: var(--ff-body);
+    font-size: .9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--clr-dark);
+    cursor: pointer;
+    border: none;
+    border-bottom: 1px solid var(--clr-grey-lt);
+    background: none;
+  }
+  .pd-details__toggle i { transition: transform var(--transition); }
+  .pd-details__toggle.open i { transform: rotate(180deg); }
+  .pd-details__content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .4s ease;
+  }
+  .pd-details__content.open { max-height: 600px; }
+  .pd-details__inner {
+    padding: 16px 0 24px;
+    font-size: .9rem;
+    line-height: 1.8;
+    color: var(--clr-dark-soft);
+  }
+
+  /* ── Related ─────────────────────────────────────── */
+  .related-section {
+    padding: 64px 0 0;
+    border-top: 1px solid var(--clr-grey-lt);
+    margin-top: 48px;
+  }
+  .related-section h2 {
+    font-family: var(--ff-heading);
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 36px;
+  }
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 28px;
+  }
+  .related-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .related-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  .related-card__img {
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    background: var(--clr-light-warm);
+  }
+  .related-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .related-card:hover .related-card__img img { transform: scale(1.05); }
+  .related-card__body { padding: 16px 18px 20px; }
+  .related-card__name {
+    font-family: var(--ff-heading);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .related-card__name a:hover { color: var(--clr-primary); }
+  .related-card__price { font-weight: 600; font-size: .95rem; }
+
+  @media (max-width: 768px) {
+    .pd-grid { grid-template-columns: 1fr; gap: 32px; }
+    .pd-thumbs button { width: 64px; height: 64px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="pd">
+  <div class="container">
+    <div class="pd-grid">
+      <!-- Gallery -->
+      <div class="pd-gallery reveal">
+        <div class="pd-gallery__main" id="mainImage">
+          {% if product.image %}
+            <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}" id="mainImg">
+          {% else %}
+            <img src="{{ url_for('static', filename='images/placeholder-product.jpg') }}" alt="{{ product.name }}" id="mainImg">
+          {% endif %}
+        </div>
+        {% set images = [] %}
+        {% if product.image %}{% set _ = images.append(product.image) %}{% endif %}
+        {% if product.image_2 %}{% set _ = images.append(product.image_2) %}{% endif %}
+        {% if product.image_3 %}{% set _ = images.append(product.image_3) %}{% endif %}
+        {% if images|length > 1 %}
+        <div class="pd-thumbs">
+          {% for img in images %}
+            <button class="{{ 'active' if loop.first }}" data-src="{{ url_for('static', filename='uploads/' ~ img) }}" aria-label="View image {{ loop.index }}">
+              <img src="{{ url_for('static', filename='uploads/' ~ img) }}" alt="{{ product.name }} – image {{ loop.index }}">
+            </button>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Info -->
+      <div class="pd-info reveal">
+        <div class="pd-breadcrumb">
+          <a href="{{ url_for('store.shop') }}">Shop</a>
+          {% if product.category %}
+            &nbsp;/&nbsp; <a href="{{ url_for('store.shop', category=product.category.slug) }}">{{ product.category.name }}</a>
+          {% endif %}
+          &nbsp;/&nbsp; {{ product.name }}
+        </div>
+
+        <h1>{{ product.name }}</h1>
+
+        <div class="pd-price">
+          {% if product.is_on_sale %}
+            <span class="sale">R{{ "%.2f"|format(product.sale_price) }}</span>
+            <span class="old">R{{ "%.2f"|format(product.price) }}</span>
+          {% else %}
+            <span>R{{ "%.2f"|format(product.price) }}</span>
+          {% endif %}
+        </div>
+
+        {% if product.short_description %}
+          <p class="pd-short">{{ product.short_description }}</p>
+        {% endif %}
+
+        {% if product.in_stock %}
+          <div class="pd-stock in"><i class="fa-solid fa-circle-check"></i> In Stock ({{ product.stock }} available)</div>
+        {% else %}
+          <div class="pd-stock out"><i class="fa-solid fa-circle-xmark"></i> Out of Stock</div>
+        {% endif %}
+
+        <form method="POST" action="{{ url_for('store.add_to_cart', product_id=product.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <div class="pd-atc">
+            <div class="qty-wrap">
+              <button type="button" id="qtyMinus" aria-label="Decrease quantity">−</button>
+              <input type="number" name="quantity" id="qtyInput" value="1" min="1" max="{{ product.stock }}">
+              <button type="button" id="qtyPlus" aria-label="Increase quantity">+</button>
+            </div>
+            <button type="submit" class="btn-atc" {{ 'disabled' if not product.in_stock }}>
+              <i class="fa-solid fa-bag-shopping"></i> Add to Cart
+            </button>
+          </div>
+        </form>
+
+        <!-- Description Accordion -->
+        <div class="pd-details">
+          <button class="pd-details__toggle open" data-target="descPanel" aria-expanded="true">
+            Description <i class="fa-solid fa-chevron-down"></i>
+          </button>
+          <div class="pd-details__content open" id="descPanel">
+            <div class="pd-details__inner">
+              {{ product.description|safe }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Products -->
+    {% if related_products %}
+    <section class="related-section">
+      <h2 class="reveal">You May Also Love</h2>
+      <div class="related-grid">
+        {% for rp in related_products %}
+        <article class="related-card reveal">
+          <a href="{{ url_for('store.product_detail', slug=rp.slug) }}" class="related-card__img">
+            {% if rp.image %}
+              <img src="{{ url_for('static', filename='uploads/' ~ rp.image) }}" alt="{{ rp.name }}" loading="lazy">
+            {% else %}
+              <img src="{{ url_for('static', filename='images/placeholder-product.jpg') }}" alt="{{ rp.name }}" loading="lazy">
+            {% endif %}
+          </a>
+          <div class="related-card__body">
+            <h3 class="related-card__name">
+              <a href="{{ url_for('store.product_detail', slug=rp.slug) }}">{{ rp.name }}</a>
+            </h3>
+            <div class="related-card__price">
+              {% if rp.is_on_sale %}
+                <span style="color:var(--clr-danger)">R{{ "%.2f"|format(rp.sale_price) }}</span>
+                <span class="price--old" style="margin-left:6px">R{{ "%.2f"|format(rp.price) }}</span>
+              {% else %}
+                R{{ "%.2f"|format(rp.price) }}
+              {% endif %}
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    /* Gallery thumbnail switching */
+    var mainImg = document.getElementById('mainImg');
+    document.querySelectorAll('.pd-thumbs button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('.pd-thumbs button').forEach(function (b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        gsap.to(mainImg, {
+          opacity: 0, duration: .15,
+          onComplete: function () {
+            mainImg.src = btn.dataset.src;
+            gsap.to(mainImg, { opacity: 1, duration: .3 });
+          }
+        });
+      });
+    });
+
+    /* Quantity buttons */
+    var qtyInput = document.getElementById('qtyInput');
+    var max = parseInt(qtyInput.getAttribute('max')) || 99;
+    document.getElementById('qtyMinus').addEventListener('click', function () {
+      var v = parseInt(qtyInput.value) || 1;
+      if (v > 1) qtyInput.value = v - 1;
+    });
+    document.getElementById('qtyPlus').addEventListener('click', function () {
+      var v = parseInt(qtyInput.value) || 1;
+      if (v < max) qtyInput.value = v + 1;
+    });
+
+    /* Accordion toggles */
+    document.querySelectorAll('.pd-details__toggle').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        btn.classList.toggle('open');
+        var panel = document.getElementById(btn.dataset.target);
+        if (panel) panel.classList.toggle('open');
+      });
+    });
+
+    /* GSAP entrance */
+    gsap.from('.pd-gallery', { opacity: 0, x: -30, duration: .7, ease: 'power2.out' });
+    gsap.from('.pd-info', { opacity: 0, x: 30, duration: .7, delay: .15, ease: 'power2.out' });
+  })();
+</script>
+{% endblock %}
