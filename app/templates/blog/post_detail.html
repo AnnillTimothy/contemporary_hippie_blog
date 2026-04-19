@@ -507,7 +507,7 @@
     <h1 class="post-hero__title" id="heroTitle">{{ post.title }}</h1>
     <div class="post-hero__meta">
       <span><i class="far fa-user"></i> {{ post.author.full_name }}</span>
-      <span><i class="far fa-calendar"></i> {{ post.published_at.strftime('%B %d, %Y') if post.published_at else '' }}</span>
+      <span><i class="far fa-calendar"></i> {% if post.published_at %}{{ post.published_at.strftime('%B %d, %Y') }}{% endif %}</span>
       <span><i class="far fa-clock"></i> {{ post.reading_time }} min read</span>
       <span><i class="far fa-eye"></i> {{ post.views }} views</span>
     </div>
@@ -588,7 +588,7 @@
         <div class="comment__avatar">{{ comment.author_name[0]|upper }}</div>
         <div>
           <div class="comment__name">{{ comment.author_name }}</div>
-          <div class="comment__date">{{ comment.created_at.strftime('%b %d, %Y') if comment.created_at else '' }}</div>
+          <div class="comment__date">{% if comment.created_at %}{{ comment.created_at.strftime('%b %d, %Y') }}{% endif %}</div>
         </div>
       </div>
       <div class="comment__body">{{ comment.body }}</div>
@@ -647,7 +647,7 @@
         </a>
         <div class="related-card__body">
           <div class="related-card__meta">
-            {{ rp.published_at.strftime('%b %d, %Y') if rp.published_at else '' }} &middot; {{ rp.reading_time }} min read
+            {% if rp.published_at %}{{ rp.published_at.strftime('%b %d, %Y') }}{% endif %} &middot; {{ rp.reading_time }} min read
           </div>
           <a href="{{ url_for('blog.post_detail', slug=rp.slug) }}">
             <h3 class="related-card__title">{{ rp.title }}</h3>
