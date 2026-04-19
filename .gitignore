@@ -5,3 +5,7 @@ contemporaryhippie
 db.sqlite3
 /static
 .DS_Store
+instance/
+*.db
+.env
+venv/

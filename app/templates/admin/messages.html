@@ -117,7 +117,7 @@
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Marking…';
 
-    fetch("{{ url_for('admin.mark_message_read', id=0) }}".replace('/0', '/' + id), {
+    fetch("{{ url_for('admin.mark_message_read', message_id=0) }}".replace('/0', '/' + id), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
