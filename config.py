@@ -2,20 +2,25 @@
 
 import os
 
-basedir = os.path.abspath(os.path.dirname(__file__))
+# Base directory of the project
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config:
     """Base configuration."""
 
     SECRET_KEY = os.environ.get("SECRET_KEY", "change-me-in-production")
+
+    # ✅ Fixed DB path (consistent + valid)
     SQLALCHEMY_DATABASE_URI = os.environ.get(
-        "DATABASE_URL", f"sqlite:///{os.path.join(basedir, 'instance', 'app.db')}"
+        "DATABASE_URL",
+        f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'app.db')}"
     )
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    # Upload settings
-    UPLOAD_FOLDER = os.path.join(basedir, "app", "static", "uploads")
+    # ✅ Fixed upload folder path
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "app", "static", "uploads")
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB
 
     # AI keys
@@ -42,13 +47,11 @@ class Config:
 
 class DevelopmentConfig(Config):
     """Development configuration."""
-
     DEBUG = True
 
 
 class ProductionConfig(Config):
     """Production configuration."""
-
     DEBUG = False
 
 
