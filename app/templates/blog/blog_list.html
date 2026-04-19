@@ -1,0 +1,595 @@
+{% extends "base.html" %}
+
+{% block title %}Blog — Contemporary Hippie{% endblock %}
+{% block meta_description %}Explore our latest articles on holistic health, mindful living, organic wellness, and conscious lifestyle choices.{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Blog Hero ── */
+  .blog-hero {
+    position: relative;
+    padding: 100px 0 60px;
+    text-align: center;
+    background: linear-gradient(160deg, var(--clr-light) 0%, var(--clr-light-warm) 100%);
+    overflow: hidden;
+  }
+  .blog-hero::before {
+    content: '';
+    position: absolute;
+    top: -60%; right: -10%;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(76,175,80,.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .blog-hero__kicker {
+    display: inline-block;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--clr-primary);
+    margin-bottom: 16px;
+  }
+  .blog-hero__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700;
+    color: var(--clr-dark);
+    line-height: 1.15;
+    margin-bottom: 24px;
+  }
+  .blog-hero__subtitle {
+    max-width: 560px;
+    margin: 0 auto 32px;
+    font-size: 1.05rem;
+    color: var(--clr-grey);
+    line-height: 1.7;
+  }
+
+  /* ── Search Bar ── */
+  .blog-search {
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .blog-search form {
+    display: flex;
+    background: var(--clr-white);
+    border-radius: 60px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border: 1px solid rgba(0,0,0,.06);
+  }
+  .blog-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: var(--ff-body);
+    font-size: .95rem;
+    padding: 14px 24px;
+    background: transparent;
+    color: var(--clr-dark);
+  }
+  .blog-search input::placeholder { color: var(--clr-grey); }
+  .blog-search button {
+    padding: 14px 28px;
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    font-weight: 600;
+    font-size: .85rem;
+    letter-spacing: .5px;
+    border: none;
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+  .blog-search button:hover { background: var(--clr-primary-dk); }
+
+  /* ── Category Pills ── */
+  .category-bar {
+    padding: 32px 0;
+    border-bottom: 1px solid var(--clr-grey-lt);
+  }
+  .category-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .pill {
+    display: inline-block;
+    padding: 8px 20px;
+    font-size: .8rem;
+    font-weight: 500;
+    letter-spacing: .3px;
+    border-radius: 40px;
+    border: 1px solid var(--clr-grey-lt);
+    color: var(--clr-dark-soft);
+    transition: all var(--transition);
+  }
+  .pill:hover,
+  .pill--active {
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border-color: var(--clr-primary);
+  }
+
+  /* ── Layout ── */
+  .blog-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 48px;
+    padding: 48px 0 80px;
+    align-items: start;
+  }
+
+  /* ── Post Cards ── */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+  }
+  .post-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .post-card__img {
+    position: relative;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+  .post-card__img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .6s ease;
+  }
+  .post-card:hover .post-card__img img { transform: scale(1.05); }
+  .post-card__cat {
+    position: absolute;
+    top: 12px; left: 12px;
+    display: inline-block;
+    padding: 4px 12px;
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    background: var(--clr-white);
+    color: var(--clr-primary);
+    border-radius: 20px;
+  }
+  .post-card__body { padding: 24px; }
+  .post-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: .75rem;
+    color: var(--clr-grey);
+    margin-bottom: 10px;
+  }
+  .post-card__meta i { color: var(--clr-primary); font-size: .7rem; }
+  .post-card__title {
+    font-family: var(--ff-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    color: var(--clr-dark);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-card__title:hover { color: var(--clr-primary); }
+  .post-card__excerpt {
+    font-size: .875rem;
+    line-height: 1.65;
+    color: var(--clr-grey);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .post-card__read {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    letter-spacing: .3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap var(--transition);
+  }
+  .post-card__read:hover { gap: 10px; }
+
+  /* ── Sidebar ── */
+  .sidebar { position: sticky; top: calc(var(--header-h) + 24px); }
+  .sidebar-section {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 28px;
+  }
+  .sidebar-section__kicker {
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--clr-accent);
+    margin-bottom: 6px;
+  }
+  .sidebar-section__title {
+    font-family: var(--ff-heading);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 20px;
+    line-height: 1.3;
+  }
+  .sidebar-product {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid rgba(0,0,0,.05);
+    align-items: center;
+  }
+  .sidebar-product:last-child { border-bottom: none; }
+  .sidebar-product__img {
+    width: 72px; height: 72px;
+    border-radius: var(--radius);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .sidebar-product__img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .sidebar-product__name {
+    font-size: .875rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .sidebar-product__name:hover { color: var(--clr-primary); }
+  .sidebar-product__price {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+  }
+  .sidebar-product__price .old-price {
+    text-decoration: line-through;
+    color: var(--clr-grey);
+    font-weight: 400;
+    margin-left: 6px;
+  }
+
+  /* Newsletter sidebar */
+  .sidebar-newsletter p {
+    font-size: .85rem;
+    color: var(--clr-grey);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .sidebar-newsletter input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: .85rem;
+    margin-bottom: 10px;
+    outline: none;
+    transition: border-color var(--transition);
+  }
+  .sidebar-newsletter input:focus { border-color: var(--clr-primary); }
+  .sidebar-newsletter button {
+    width: 100%;
+    padding: 12px;
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 600;
+    font-size: .85rem;
+    cursor: pointer;
+    transition: background var(--transition);
+  }
+  .sidebar-newsletter button:hover { background: var(--clr-primary-dk); }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 48px;
+  }
+  .pagination a,
+  .pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px; height: 40px;
+    padding: 0 12px;
+    font-size: .85rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+    transition: all var(--transition);
+  }
+  .pagination a {
+    color: var(--clr-dark-soft);
+    border: 1px solid var(--clr-grey-lt);
+  }
+  .pagination a:hover {
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border-color: var(--clr-primary);
+  }
+  .pagination .active {
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border: 1px solid var(--clr-primary);
+  }
+  .pagination .disabled {
+    color: var(--clr-grey-lt);
+    pointer-events: none;
+  }
+  .pagination .ellipsis { border: none; color: var(--clr-grey); }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    grid-column: 1 / -1;
+  }
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--clr-grey-lt);
+    margin-bottom: 20px;
+  }
+  .empty-state h3 {
+    font-family: var(--ff-heading);
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+  .empty-state p { color: var(--clr-grey); }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .blog-layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; }
+  }
+  @media (max-width: 640px) {
+    .posts-grid { grid-template-columns: 1fr; }
+    .blog-hero { padding: 70px 0 40px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ── Hero Section ── -->
+<section class="blog-hero">
+  <div class="container">
+    <span class="blog-hero__kicker reveal">The Journal</span>
+    <h1 class="blog-hero__title reveal">
+      {% if search_query %}
+        Results for "{{ search_query }}"
+      {% elif current_category %}
+        {{ current_category.name }}
+      {% else %}
+        Stories for the Conscious Mind
+      {% endif %}
+    </h1>
+    <p class="blog-hero__subtitle reveal">
+      Wellness wisdom, holistic health insights, and mindful living guides — crafted with intention and backed by science.
+    </p>
+    <div class="blog-search reveal">
+      <form action="{{ url_for('blog.blog_list') }}" method="GET">
+        <input type="text" name="q" placeholder="Search for articles…" value="{{ search_query or '' }}">
+        <button type="submit"><i class="fas fa-search"></i> Search</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ── Category Filter ── -->
+{% if categories %}
+<div class="category-bar">
+  <div class="container">
+    <div class="category-pills">
+      <a href="{{ url_for('blog.blog_list') }}" class="pill {{ 'pill--active' if not current_category }}">All</a>
+      {% for cat in categories %}
+        <a href="{{ url_for('blog.category', slug=cat.slug) }}" class="pill {{ 'pill--active' if current_category and current_category.slug == cat.slug }}">
+          {{ cat.name }}
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- ── Blog Layout ── -->
+<div class="container">
+  <div class="blog-layout">
+
+    <!-- Main Content -->
+    <div>
+      {% if posts %}
+        <div class="posts-grid">
+          {% for post in pagination.items %}
+            <article class="post-card reveal">
+              <a href="{{ url_for('blog.post_detail', slug=post.slug) }}" class="post-card__img">
+                <img src="{{ url_for('static', filename=post.featured_image) if post.featured_image else url_for('static', filename='images/placeholder.png') }}"
+                     alt="{{ post.title }}" loading="lazy">
+                {% if post.categories %}
+                  <span class="post-card__cat">{{ post.categories[0].name }}</span>
+                {% endif %}
+              </a>
+              <div class="post-card__body">
+                <div class="post-card__meta">
+                  <span><i class="far fa-calendar"></i> {% if post.published_at %}{{ post.published_at.strftime('%b %d, %Y') }}{% endif %}</span>
+                  <span><i class="far fa-clock"></i> {{ post.reading_time }} min read</span>
+                </div>
+                <a href="{{ url_for('blog.post_detail', slug=post.slug) }}">
+                  <h2 class="post-card__title">{{ post.title }}</h2>
+                </a>
+                <p class="post-card__excerpt">{{ post.excerpt }}</p>
+                <a href="{{ url_for('blog.post_detail', slug=post.slug) }}" class="post-card__read">
+                  Read More <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+            </article>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if pagination.pages > 1 %}
+        <nav class="pagination" aria-label="Blog pagination">
+          {% if pagination.has_prev %}
+            <a href="{{ url_for('blog.blog_list', page=pagination.prev_num, q=search_query or None) }}">
+              <i class="fas fa-chevron-left"></i>
+            </a>
+          {% else %}
+            <span class="disabled"><i class="fas fa-chevron-left"></i></span>
+          {% endif %}
+
+          {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+            {% if page_num %}
+              {% if page_num == pagination.page %}
+                <span class="active">{{ page_num }}</span>
+              {% else %}
+                <a href="{{ url_for('blog.blog_list', page=page_num, q=search_query or None) }}">{{ page_num }}</a>
+              {% endif %}
+            {% else %}
+              <span class="ellipsis">&hellip;</span>
+            {% endif %}
+          {% endfor %}
+
+          {% if pagination.has_next %}
+            <a href="{{ url_for('blog.blog_list', page=pagination.next_num, q=search_query or None) }}">
+              <i class="fas fa-chevron-right"></i>
+            </a>
+          {% else %}
+            <span class="disabled"><i class="fas fa-chevron-right"></i></span>
+          {% endif %}
+        </nav>
+        {% endif %}
+
+      {% else %}
+        <div class="empty-state">
+          <i class="fas fa-leaf"></i>
+          <h3>No articles found</h3>
+          <p>Try adjusting your search or browse our categories above.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <!-- Editors' Picks -->
+      {% if sidebar_products %}
+      <div class="sidebar-section reveal">
+        <span class="sidebar-section__kicker">Curated for you</span>
+        <h3 class="sidebar-section__title">Our Editors' Picks</h3>
+        {% for product in sidebar_products %}
+          <div class="sidebar-product">
+            <a href="{{ url_for('store.product_detail', slug=product.slug) }}" class="sidebar-product__img">
+              <img src="{{ url_for('static', filename=product.image) if product.image else url_for('static', filename='images/placeholder.png') }}"
+                   alt="{{ product.name }}" loading="lazy">
+            </a>
+            <div>
+              <a href="{{ url_for('store.product_detail', slug=product.slug) }}" class="sidebar-product__name">{{ product.name }}</a>
+              <div class="sidebar-product__price">
+                ${{ "%.2f"|format(product.current_price) }}
+                {% if product.is_on_sale %}
+                  <span class="old-price">${{ "%.2f"|format(product.price) }}</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <!-- Newsletter -->
+      <div class="sidebar-section sidebar-newsletter reveal">
+        <span class="sidebar-section__kicker">Stay connected</span>
+        <h3 class="sidebar-section__title">Weekly Wellness Digest</h3>
+        <p>Join our community and get curated wellness tips, new articles, and exclusive offers every week.</p>
+        <form action="{{ url_for('blog.newsletter_subscribe') }}" method="POST">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="email" name="email" placeholder="Your email address" required aria-label="Email for newsletter">
+          <button type="submit">Subscribe <i class="fas fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </aside>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Stagger post cards */
+  gsap.utils.toArray('.post-card').forEach(function(card, i) {
+    gsap.from(card, {
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 85%',
+        toggleActions: 'play none none none'
+      },
+      opacity: 0,
+      y: 40,
+      duration: 0.6,
+      delay: (i % 2) * 0.15,
+      ease: 'power2.out'
+    });
+  });
+
+  /* Category pills stagger */
+  gsap.from('.pill', {
+    scrollTrigger: { trigger: '.category-bar', start: 'top 85%' },
+    opacity: 0,
+    y: 20,
+    duration: 0.4,
+    stagger: 0.06,
+    ease: 'power2.out'
+  });
+
+  /* Sidebar sections */
+  gsap.utils.toArray('.sidebar-section').forEach(function(el) {
+    gsap.from(el, {
+      scrollTrigger: { trigger: el, start: 'top 85%' },
+      opacity: 0,
+      x: 30,
+      duration: 0.6,
+      ease: 'power2.out'
+    });
+  });
+
+  /* Hero text reveal */
+  gsap.from('.blog-hero__kicker', { opacity: 0, y: 20, duration: 0.5, delay: 0.1 });
+  gsap.from('.blog-hero__title', { opacity: 0, y: 30, duration: 0.6, delay: 0.2 });
+  gsap.from('.blog-hero__subtitle', { opacity: 0, y: 20, duration: 0.5, delay: 0.35 });
+  gsap.from('.blog-search', { opacity: 0, y: 20, duration: 0.5, delay: 0.45 });
+
+  /* Reveal helper */
+  gsap.utils.toArray('.reveal').forEach(function(el) {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: function() { el.classList.add('visible'); }
+    });
+  });
+</script>
+{% endblock %}

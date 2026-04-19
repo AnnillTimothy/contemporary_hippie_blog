@@ -87,9 +87,9 @@ class Post(db.Model):
     # Foreign keys
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
-    # Relationships
+    # Relationships – use class ref directly to avoid ambiguity with store.Category
     categories = db.relationship(
-        "Category", secondary=post_categories, back_populates="posts"
+        Category, secondary=post_categories, back_populates="posts"
     )
     tags = db.relationship("Tag", secondary=post_tags, backref="posts")
     comments = db.relationship(

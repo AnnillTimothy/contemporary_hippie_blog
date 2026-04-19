@@ -1,0 +1,579 @@
+{% extends "base.html" %}
+
+{% block title %}About — Contemporary Hippie{% endblock %}
+{% block meta_description %}Learn about Contemporary Hippie — our mission, values, and the team behind modern wellness and holistic living.{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── About Hero ── */
+  .about-hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    overflow: hidden;
+    background: linear-gradient(160deg, var(--clr-dark) 0%, #2a3a2a 100%);
+  }
+  .about-hero__orb {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    opacity: .12;
+  }
+  .about-hero__orb--1 {
+    width: 600px; height: 600px;
+    top: -20%; right: -10%;
+    background: radial-gradient(circle, var(--clr-primary) 0%, transparent 70%);
+  }
+  .about-hero__orb--2 {
+    width: 400px; height: 400px;
+    bottom: -15%; left: -5%;
+    background: radial-gradient(circle, var(--clr-accent) 0%, transparent 70%);
+  }
+  .about-hero__content {
+    position: relative;
+    z-index: 1;
+    max-width: 720px;
+    padding: 100px 24px;
+  }
+  .about-hero__kicker {
+    display: inline-block;
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--clr-primary-lt);
+    margin-bottom: 20px;
+  }
+  .about-hero__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    color: var(--clr-white);
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+  .about-hero__title em {
+    font-style: italic;
+    color: var(--clr-primary-lt);
+  }
+  .about-hero__subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,.6);
+    line-height: 1.75;
+    max-width: 580px;
+    margin: 0 auto;
+  }
+
+  /* ── Mission Statement ── */
+  .mission {
+    padding: 100px 0;
+    background: var(--clr-light);
+  }
+  .mission__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: center;
+  }
+  .mission__kicker {
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--clr-accent);
+    margin-bottom: 12px;
+  }
+  .mission__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: var(--clr-dark);
+    line-height: 1.2;
+    margin-bottom: 24px;
+  }
+  .mission__text {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: var(--clr-dark-soft);
+    margin-bottom: 16px;
+  }
+  .mission__img-wrap {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    aspect-ratio: 4/3;
+  }
+  .mission__img-wrap img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .mission__accent {
+    position: absolute;
+    bottom: -20px; right: -20px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(76,175,80,.1);
+    z-index: -1;
+  }
+
+  /* ── Values ── */
+  .values {
+    padding: 100px 0;
+    background: var(--clr-light-warm);
+    text-align: center;
+  }
+  .values__kicker {
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--clr-primary);
+    margin-bottom: 10px;
+  }
+  .values__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: var(--clr-dark);
+    margin-bottom: 56px;
+  }
+  .values__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+  }
+  .value-card {
+    background: var(--clr-white);
+    padding: 40px 28px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .value-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
+  }
+  .value-card__icon {
+    width: 56px; height: 56px;
+    margin: 0 auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(76,175,80,.1);
+    color: var(--clr-primary);
+    font-size: 1.3rem;
+  }
+  .value-card__title {
+    font-family: var(--ff-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 12px;
+  }
+  .value-card__text {
+    font-size: .875rem;
+    line-height: 1.7;
+    color: var(--clr-grey);
+  }
+
+  /* ── Philosophy / Parallax ── */
+  .philosophy {
+    position: relative;
+    padding: 120px 0;
+    text-align: center;
+    overflow: hidden;
+    background: var(--clr-dark);
+  }
+  .philosophy__bg {
+    position: absolute;
+    inset: 0;
+    opacity: .15;
+  }
+  .philosophy__bg img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+  .philosophy__content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .philosophy__icon {
+    font-size: 2.5rem;
+    color: var(--clr-primary-lt);
+    margin-bottom: 24px;
+  }
+  .philosophy__quote {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+    font-style: italic;
+    color: var(--clr-white);
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .philosophy__attr {
+    font-size: .85rem;
+    color: rgba(255,255,255,.5);
+    letter-spacing: 1px;
+  }
+
+  /* ── Team Section ── */
+  .team {
+    padding: 100px 0;
+    text-align: center;
+    background: var(--clr-light);
+  }
+  .team__kicker {
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--clr-primary);
+    margin-bottom: 10px;
+  }
+  .team__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 700;
+    color: var(--clr-dark);
+    margin-bottom: 56px;
+  }
+  .team__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 36px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .team-card {
+    text-align: center;
+  }
+  .team-card__avatar {
+    width: 130px; height: 130px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--clr-primary-lt), var(--clr-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--ff-heading);
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: var(--clr-white);
+    box-shadow: 0 8px 24px rgba(76,175,80,.2);
+  }
+  .team-card__name {
+    font-family: var(--ff-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    margin-bottom: 4px;
+  }
+  .team-card__role {
+    font-size: .8rem;
+    font-weight: 500;
+    color: var(--clr-primary);
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .team-card__bio {
+    font-size: .875rem;
+    line-height: 1.7;
+    color: var(--clr-grey);
+  }
+
+  /* ── CTA Banner ── */
+  .about-cta {
+    padding: 80px 0;
+    text-align: center;
+    background: linear-gradient(135deg, var(--clr-primary) 0%, var(--clr-primary-dk) 100%);
+    color: var(--clr-white);
+  }
+  .about-cta__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .about-cta__text {
+    font-size: 1rem;
+    color: rgba(255,255,255,.8);
+    max-width: 520px;
+    margin: 0 auto 28px;
+    line-height: 1.7;
+  }
+  .about-cta__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 36px;
+    background: var(--clr-white);
+    color: var(--clr-primary);
+    font-weight: 700;
+    font-size: .9rem;
+    border-radius: var(--radius);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .about-cta__btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,.2);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .mission__inner { grid-template-columns: 1fr; gap: 40px; }
+    .values__grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+    .team__grid { grid-template-columns: 1fr; max-width: 360px; }
+    .about-hero { min-height: 55vh; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ── Hero ── -->
+<section class="about-hero">
+  <div class="about-hero__orb about-hero__orb--1" id="orb1"></div>
+  <div class="about-hero__orb about-hero__orb--2" id="orb2"></div>
+  <div class="about-hero__content">
+    <span class="about-hero__kicker" id="heroKicker">Our Story</span>
+    <h1 class="about-hero__title" id="heroTitle">Ancient Wisdom, <em>Modern Living</em></h1>
+    <p class="about-hero__subtitle" id="heroSub">
+      We believe wellness isn't a trend — it's a birthright. Contemporary Hippie was born to bridge the gap between age-old holistic practices and the demands of a modern world.
+    </p>
+  </div>
+</section>
+
+<!-- ── Mission ── -->
+<section class="mission">
+  <div class="container">
+    <div class="mission__inner">
+      <div class="mission__img-wrap reveal" id="missionImg">
+        <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="Contemporary Hippie mission" loading="lazy">
+        <div class="mission__accent"></div>
+      </div>
+      <div>
+        <span class="mission__kicker reveal">Our Mission</span>
+        <h2 class="mission__title reveal">Empowering Conscious Choices, One Article at a Time</h2>
+        <p class="mission__text reveal">
+          We started Contemporary Hippie because we were tired of wellness content that was either too esoteric to be practical or too commercial to be trusted. We wanted a space where real health science meets heartfelt storytelling.
+        </p>
+        <p class="mission__text reveal">
+          Every article we publish is researched with intention. Every product we recommend has been vetted by our team. We're not here to sell you a lifestyle — we're here to help you design one that actually feels good.
+        </p>
+        <p class="mission__text reveal">
+          From adaptogens to mindfulness, from sustainable skincare to whole-food nutrition — we cover the topics that matter to people who care about what they put in, on, and around their bodies.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Values ── -->
+<section class="values">
+  <div class="container">
+    <span class="values__kicker reveal">What We Believe</span>
+    <h2 class="values__title reveal">Our Core Values</h2>
+    <div class="values__grid">
+      <div class="value-card reveal">
+        <div class="value-card__icon"><i class="fas fa-seedling"></i></div>
+        <h3 class="value-card__title">Rooted in Nature</h3>
+        <p class="value-card__text">
+          We believe the earth provides everything we need to thrive. Our recommendations always start with what's natural, sustainable, and time-tested.
+        </p>
+      </div>
+      <div class="value-card reveal">
+        <div class="value-card__icon"><i class="fas fa-microscope"></i></div>
+        <h3 class="value-card__title">Backed by Science</h3>
+        <p class="value-card__text">
+          Intuition is powerful, but evidence matters. We bridge traditional wisdom with peer-reviewed research so you can make informed decisions.
+        </p>
+      </div>
+      <div class="value-card reveal">
+        <div class="value-card__icon"><i class="fas fa-heart"></i></div>
+        <h3 class="value-card__title">Radically Honest</h3>
+        <p class="value-card__text">
+          No sponsored content disguised as editorial. When we recommend a product, it's because we genuinely believe in it — and we'll always tell you why.
+        </p>
+      </div>
+      <div class="value-card reveal">
+        <div class="value-card__icon"><i class="fas fa-globe-americas"></i></div>
+        <h3 class="value-card__title">Sustainability First</h3>
+        <p class="value-card__text">
+          From the brands we feature to the way we run our business, environmental responsibility is woven into everything we do.
+        </p>
+      </div>
+      <div class="value-card reveal">
+        <div class="value-card__icon"><i class="fas fa-hands-holding-circle"></i></div>
+        <h3 class="value-card__title">Inclusive Wellness</h3>
+        <p class="value-card__text">
+          Wellness is for everybody and every body. We champion accessibility and believe that feeling good shouldn't require a luxury budget.
+        </p>
+      </div>
+      <div class="value-card reveal">
+        <div class="value-card__icon"><i class="fas fa-spa"></i></div>
+        <h3 class="value-card__title">Mindful Living</h3>
+        <p class="value-card__text">
+          Beyond products and routines, we advocate for a slower, more intentional way of being — where presence is the ultimate wellness practice.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Philosophy / Parallax ── -->
+<section class="philosophy" id="philosophySection">
+  <div class="philosophy__bg" id="philosophyBg">
+    <img src="{{ url_for('static', filename='images/placeholder.png') }}" alt="" loading="lazy">
+  </div>
+  <div class="philosophy__content container">
+    <div class="philosophy__icon"><i class="fas fa-leaf"></i></div>
+    <blockquote class="philosophy__quote reveal">
+      "The body heals with play, the mind heals with laughter, and the spirit heals with joy."
+    </blockquote>
+    <span class="philosophy__attr reveal">— Our Wellness Philosophy</span>
+  </div>
+</section>
+
+<!-- ── Team ── -->
+<section class="team">
+  <div class="container">
+    <span class="team__kicker reveal">The Humans Behind It All</span>
+    <h2 class="team__title reveal">Meet Our Team</h2>
+    <div class="team__grid">
+      <div class="team-card reveal">
+        <div class="team-card__avatar">S</div>
+        <h3 class="team-card__name">Sarah Mitchell</h3>
+        <div class="team-card__role">Founder &amp; Editor-in-Chief</div>
+        <p class="team-card__bio">
+          Former health journalist turned wellness entrepreneur. Sarah built Contemporary Hippie from her kitchen table and a deep love for holistic living.
+        </p>
+      </div>
+      <div class="team-card reveal">
+        <div class="team-card__avatar">D</div>
+        <h3 class="team-card__name">Dr. James Okafor</h3>
+        <div class="team-card__role">Science &amp; Nutrition Advisor</div>
+        <p class="team-card__bio">
+          A naturopathic doctor with 15 years of clinical experience. James ensures every health claim we make is grounded in real research.
+        </p>
+      </div>
+      <div class="team-card reveal">
+        <div class="team-card__avatar">L</div>
+        <h3 class="team-card__name">Luna Chen</h3>
+        <div class="team-card__role">Creative Director</div>
+        <p class="team-card__bio">
+          Yoga teacher, photographer, and visual storyteller. Luna brings the aesthetic soul to Contemporary Hippie's brand and content.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section class="about-cta">
+  <div class="container">
+    <h2 class="about-cta__title reveal">Ready to Start Your Wellness Journey?</h2>
+    <p class="about-cta__text reveal">
+      Explore our latest articles, discover curated wellness products, or just say hello — we'd love to hear from you.
+    </p>
+    <a href="{{ url_for('blog.blog_list') }}" class="about-cta__btn reveal">
+      Explore the Blog <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Hero entrance */
+  var heroTl = gsap.timeline({ delay: 0.15 });
+  heroTl
+    .from('#heroKicker', { opacity: 0, y: 20, duration: 0.5 })
+    .from('#heroTitle', { opacity: 0, y: 40, duration: 0.7, ease: 'power3.out' }, '-=0.3')
+    .from('#heroSub', { opacity: 0, y: 20, duration: 0.5 }, '-=0.35');
+
+  /* Orb parallax */
+  gsap.to('#orb1', {
+    y: -80, x: 30,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '.about-hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true
+    }
+  });
+  gsap.to('#orb2', {
+    y: -60, x: -20,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '.about-hero',
+      start: 'top top',
+      end: 'bottom top',
+      scrub: true
+    }
+  });
+
+  /* Mission image parallax */
+  gsap.from('#missionImg img', {
+    yPercent: 15,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '.mission',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: true
+    }
+  });
+
+  /* Value cards stagger */
+  gsap.utils.toArray('.value-card').forEach(function(card, i) {
+    gsap.from(card, {
+      scrollTrigger: { trigger: card, start: 'top 85%' },
+      opacity: 0, y: 40, duration: 0.6, delay: (i % 3) * 0.12, ease: 'power2.out'
+    });
+  });
+
+  /* Philosophy parallax background */
+  gsap.to('#philosophyBg img', {
+    yPercent: 20,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: '#philosophySection',
+      start: 'top bottom',
+      end: 'bottom top',
+      scrub: true
+    }
+  });
+
+  /* Team cards */
+  gsap.utils.toArray('.team-card').forEach(function(card, i) {
+    gsap.from(card, {
+      scrollTrigger: { trigger: card, start: 'top 85%' },
+      opacity: 0, y: 40, scale: 0.95, duration: 0.6, delay: i * 0.15, ease: 'power2.out'
+    });
+  });
+
+  /* CTA reveal */
+  gsap.from('.about-cta__title', {
+    scrollTrigger: { trigger: '.about-cta', start: 'top 80%' },
+    opacity: 0, y: 30, duration: 0.6
+  });
+
+  /* Generic reveal */
+  gsap.utils.toArray('.reveal').forEach(function(el) {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: function() { el.classList.add('visible'); }
+    });
+  });
+</script>
+{% endblock %}

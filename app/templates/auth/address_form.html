@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .address-form-section {
+    padding: 60px 24px 80px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--clr-grey);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    transition: color var(--transition);
+  }
+
+  .back-link:hover {
+    color: var(--clr-primary);
+  }
+
+  .address-form-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    padding: 44px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .address-form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--clr-primary), var(--clr-accent));
+  }
+
+  .address-form-card__icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-dk));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 18px;
+    color: var(--clr-white);
+    font-size: 1.15rem;
+  }
+
+  .address-form-card__title {
+    font-family: var(--ff-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--clr-dark);
+    margin-bottom: 28px;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--clr-dark-soft);
+    margin-bottom: 6px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: 0.95rem;
+    color: var(--clr-dark);
+    background: var(--clr-light);
+    transition: border-color var(--transition), box-shadow var(--transition);
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-row-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+  }
+
+  .field-error {
+    display: block;
+    color: var(--clr-danger);
+    font-size: 0.8rem;
+    margin-top: 4px;
+  }
+
+  .checkbox-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+
+  .checkbox-group input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--clr-primary);
+    cursor: pointer;
+  }
+
+  .checkbox-group label {
+    font-size: 0.9rem;
+    color: var(--clr-dark-soft);
+    cursor: pointer;
+  }
+
+  .btn-save {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-dk));
+    color: var(--clr-white);
+    border: none;
+    border-radius: var(--radius);
+    font-family: var(--ff-body);
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    cursor: pointer;
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+
+  .btn-save:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+  }
+
+  @media (max-width: 520px) {
+    .form-row, .form-row-3 { grid-template-columns: 1fr; }
+    .address-form-card { padding: 32px 20px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="address-form-section">
+  <a href="{{ url_for('auth.addresses') }}" class="back-link">
+    <i class="fa-solid fa-arrow-left"></i> Back to Addresses
+  </a>
+
+  <div class="address-form-card" id="addressFormCard">
+    <div class="address-form-card__icon">
+      <i class="fa-solid fa-location-dot"></i>
+    </div>
+    <h1 class="address-form-card__title">{{ title }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="flash-message flash-{{ category }}" style="padding:10px 16px;border-radius:var(--radius);margin-bottom:16px;font-size:.875rem;
+            {% if category == 'danger' or category == 'error' %}background:#fdecea;color:var(--clr-danger);border:1px solid #f5c6cb;
+            {% elif category == 'success' %}background:#e8f5e9;color:var(--clr-primary-dk);border:1px solid #c8e6c9;
+            {% else %}background:#fff3cd;color:#856404;border:1px solid #ffeeba;{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      {{ form.hidden_tag() }}
+
+      <div class="form-group">
+        {{ form.label.label }}
+        {{ form.label(class="form-input", placeholder="e.g. Home, Office, Cottage") }}
+        {% for error in form.label.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-group">
+        {{ form.street.label }}
+        {{ form.street(class="form-input", placeholder="Street address") }}
+        {% for error in form.street.errors %}
+          <span class="field-error">{{ error }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          {{ form.city.label }}
+          {{ form.city(class="form-input", placeholder="City") }}
+          {% for error in form.city.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group">
+          {{ form.province.label }}
+          {{ form.province(class="form-input", placeholder="Province / State") }}
+          {% for error in form.province.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="form-row-3">
+        <div class="form-group">
+          {{ form.postal_code.label }}
+          {{ form.postal_code(class="form-input", placeholder="Postal code") }}
+          {% for error in form.postal_code.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+
+        <div class="form-group" style="grid-column: span 2;">
+          {{ form.country.label }}
+          {{ form.country(class="form-input", placeholder="Country") }}
+          {% for error in form.country.errors %}
+            <span class="field-error">{{ error }}</span>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="checkbox-group">
+        {{ form.is_default(class="form-checkbox") }}
+        {{ form.is_default.label }}
+      </div>
+
+      <div class="form-group">
+        {{ form.submit(class="btn-save") }}
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var card = document.getElementById('addressFormCard');
+    if (card && typeof gsap !== 'undefined') {
+      gsap.from(card, {
+        y: 40, opacity: 0, duration: 0.8, ease: 'power3.out'
+      });
+      gsap.from(card.querySelectorAll('.form-group, .checkbox-group'), {
+        y: 18, opacity: 0, duration: 0.45, stagger: 0.06, delay: 0.3, ease: 'power2.out'
+      });
+    }
+  });
+</script>
+{% endblock %}

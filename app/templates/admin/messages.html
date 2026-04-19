@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Messages — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-layout{display:flex;min-height:calc(100vh - var(--header-h))}
+  .admin-sidebar{width:250px;background:var(--clr-dark);color:#fff;padding:2rem 0;flex-shrink:0;position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto}
+  .admin-sidebar h2{font-family:var(--ff-heading);font-size:1.2rem;padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--clr-dark-soft);margin-bottom:1rem;color:var(--clr-accent)}
+  .admin-sidebar nav a{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.9rem;transition:var(--transition)}
+  .admin-sidebar nav a:hover,.admin-sidebar nav a.active{background:var(--clr-dark-soft);color:#fff;border-left:3px solid var(--clr-primary)}
+  .admin-sidebar nav a i{width:20px;text-align:center}
+  .admin-main{flex:1;padding:2rem 2.5rem;background:var(--clr-light);min-width:0}
+  .admin-page-header{margin-bottom:2rem}
+  .admin-page-header h1{font-family:var(--ff-heading);font-size:1.8rem;color:var(--clr-dark)}
+
+  .msg-card{background:var(--clr-white);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:1.5rem;margin-bottom:1rem;border-left:3px solid var(--clr-grey-lt);transition:var(--transition)}
+  .msg-card:hover{box-shadow:var(--shadow-md)}
+  .msg-card.unread{border-left-color:var(--clr-primary);background:rgba(76,175,80,.02)}
+  .msg-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem}
+  .msg-sender{display:flex;align-items:center;gap:.75rem}
+  .msg-sender strong{font-size:.95rem;color:var(--clr-dark)}
+  .msg-sender span{font-size:.8rem;color:var(--clr-grey)}
+  .msg-date{font-size:.8rem;color:var(--clr-grey)}
+  .msg-reason{display:inline-block;padding:.2rem .6rem;background:var(--clr-light);border-radius:50px;font-size:.75rem;color:var(--clr-dark-soft);margin-bottom:.5rem}
+  .msg-body{font-size:.9rem;line-height:1.6;color:var(--clr-dark-soft);margin-bottom:1rem}
+  .msg-body.truncated{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+  .msg-toggle{background:none;border:none;color:var(--clr-primary);font-size:.85rem;cursor:pointer;padding:0;margin-bottom:1rem}
+  .msg-toggle:hover{text-decoration:underline}
+  .unread-dot{width:8px;height:8px;border-radius:50%;background:var(--clr-primary);display:inline-block;flex-shrink:0}
+  .btn-mark-read{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;background:rgba(76,175,80,.1);color:var(--clr-primary);border:none;border-radius:var(--radius);font-size:.8rem;cursor:pointer;transition:var(--transition)}
+  .btn-mark-read:hover{background:var(--clr-primary);color:#fff}
+  .btn-mark-read.read{background:var(--clr-grey-lt);color:var(--clr-grey);cursor:default}
+  .empty-state{text-align:center;padding:3rem;color:var(--clr-grey);font-size:.9rem}
+
+  @media(max-width:768px){
+    .admin-layout{flex-direction:column}
+    .admin-sidebar{width:100%;height:auto;position:relative;top:0}
+    .admin-sidebar nav{display:flex;flex-wrap:wrap;gap:.25rem;padding:0 1rem 1rem}
+    .admin-sidebar nav a{padding:.5rem .75rem;font-size:.8rem}
+    .admin-main{padding:1.5rem}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2><i class="fas fa-leaf"></i> Admin Panel</h2>
+    <nav>
+      <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="{{ url_for('admin.posts') }}"><i class="fas fa-pen-fancy"></i> Posts</a>
+      <a href="{{ url_for('admin.ai_generate') }}"><i class="fas fa-robot"></i> AI Generate</a>
+      <a href="{{ url_for('admin.products') }}"><i class="fas fa-box-open"></i> Products</a>
+      <a href="{{ url_for('admin.orders') }}"><i class="fas fa-shopping-bag"></i> Orders</a>
+      <a href="{{ url_for('admin.comments') }}"><i class="fas fa-comments"></i> Comments</a>
+      <a href="{{ url_for('admin.messages') }}" class="active"><i class="fas fa-envelope"></i> Messages</a>
+      <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i> Users</a>
+      <a href="{{ url_for('admin.subscribers') }}"><i class="fas fa-bell"></i> Subscribers</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-page-header">
+      <h1>Messages</h1>
+    </div>
+
+    {% for message in messages %}
+    <div class="msg-card {% if not message.is_read %}unread{% endif %}" id="msg-{{ message.id }}">
+      <div class="msg-header">
+        <div class="msg-sender">
+          {% if not message.is_read %}<span class="unread-dot"></span>{% endif %}
+          <strong>{{ message.name }}</strong>
+          <span>{{ message.email }}</span>
+        </div>
+        <span class="msg-date">{{ message.created_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+      </div>
+      {% if message.reason %}
+      <span class="msg-reason"><i class="fas fa-tag"></i> {{ message.reason }}</span>
+      {% endif %}
+      <div class="msg-body truncated" id="msg-body-{{ message.id }}">{{ message.message }}</div>
+      <button class="msg-toggle" onclick="toggleMsg({{ message.id }})">Read more</button>
+      {% if not message.is_read %}
+      <button class="btn-mark-read" id="btn-read-{{ message.id }}" onclick="markRead({{ message.id }})">
+        <i class="fas fa-check"></i> Mark as Read
+      </button>
+      {% else %}
+      <span class="btn-mark-read read"><i class="fas fa-check-double"></i> Read</span>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-inbox" style="font-size:2.5rem;margin-bottom:.75rem;display:block"></i>
+      No messages yet
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function toggleMsg(id) {
+    var body = document.getElementById('msg-body-' + id);
+    var btn = body.nextElementSibling;
+    if (body.classList.contains('truncated')) {
+      body.classList.remove('truncated');
+      btn.textContent = 'Show less';
+    } else {
+      body.classList.add('truncated');
+      btn.textContent = 'Read more';
+    }
+  }
+
+  function markRead(id) {
+    var btn = document.getElementById('btn-read-' + id);
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Marking…';
+
+    fetch("{{ url_for('admin.mark_message_read', message_id=0) }}".replace('/0', '/' + id), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token() }}'
+      }
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+      var card = document.getElementById('msg-' + id);
+      card.classList.remove('unread');
+      var dot = card.querySelector('.unread-dot');
+      if (dot) dot.remove();
+      btn.className = 'btn-mark-read read';
+      btn.innerHTML = '<i class="fas fa-check-double"></i> Read';
+      btn.onclick = null;
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check"></i> Mark as Read';
+    });
+  }
+</script>
+{% endblock %}

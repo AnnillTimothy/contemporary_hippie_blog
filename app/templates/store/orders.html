@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .orders-section { padding: 48px 0 80px; }
+  .orders-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+  .orders-header h1 {
+    font-family: var(--ff-heading);
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .orders-header p { color: var(--clr-grey); font-size: .95rem; }
+
+  /* ── Order Cards ─────────────────────────────────── */
+  .orders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  .order-row {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    padding: 24px 28px;
+    display: grid;
+    grid-template-columns: 1fr auto auto auto auto;
+    gap: 20px;
+    align-items: center;
+    transition: box-shadow var(--transition), transform var(--transition);
+  }
+  .order-row:hover {
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+  .order-row__number {
+    font-family: var(--ff-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+  .order-row__date {
+    font-size: .82rem;
+    color: var(--clr-grey);
+    white-space: nowrap;
+  }
+  .order-row__status {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px;
+    border-radius: 100px;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .status--pending { background: rgba(243, 156, 18, .12); color: var(--clr-warning); }
+  .status--processing { background: rgba(52, 152, 219, .12); color: var(--clr-info); }
+  .status--shipped { background: rgba(76, 175, 80, .12); color: var(--clr-primary); }
+  .status--delivered { background: rgba(76, 175, 80, .18); color: var(--clr-primary-dk); }
+  .status--cancelled { background: rgba(231, 76, 60, .12); color: var(--clr-danger); }
+  .order-row__total {
+    font-weight: 700;
+    font-size: 1rem;
+    white-space: nowrap;
+  }
+  .order-row__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-dark);
+    padding: 8px 18px;
+    border: 1.5px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    transition: all var(--transition);
+    white-space: nowrap;
+  }
+  .order-row__link:hover {
+    background: var(--clr-dark);
+    color: var(--clr-white);
+    border-color: var(--clr-dark);
+  }
+
+  /* ── Empty ───────────────────────────────────────── */
+  .orders-empty {
+    text-align: center;
+    padding: 80px 24px;
+  }
+  .orders-empty i {
+    font-size: 3rem;
+    color: var(--clr-grey-lt);
+    margin-bottom: 16px;
+  }
+  .orders-empty h2 {
+    font-family: var(--ff-heading);
+    font-size: 1.5rem;
+    margin-bottom: 8px;
+  }
+  .orders-empty p { color: var(--clr-grey); margin-bottom: 24px; }
+  .btn-shop {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 32px;
+    background: var(--clr-dark);
+    color: var(--clr-white);
+    font-size: .85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-radius: var(--radius);
+    transition: background var(--transition);
+  }
+  .btn-shop:hover { background: var(--clr-primary); }
+
+  @media (max-width: 768px) {
+    .order-row {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .order-row__link { grid-column: 1 / -1; justify-content: center; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="orders-section">
+  <div class="container">
+    <div class="orders-header reveal">
+      <h1>My Orders</h1>
+      <p>Track and review your wellness purchases.</p>
+    </div>
+
+    {% if orders %}
+    <div class="orders-list">
+      {% for order in orders %}
+      <div class="order-row reveal">
+        <div class="order-row__number">#{{ order.order_number }}</div>
+        <div class="order-row__date">{{ order.created_at.strftime('%d %b %Y') }}</div>
+        <div>
+          {% set status_class = {
+            'pending': 'status--pending',
+            'processing': 'status--processing',
+            'shipped': 'status--shipped',
+            'delivered': 'status--delivered',
+            'cancelled': 'status--cancelled'
+          } %}
+          <span class="order-row__status {{ status_class.get(order.status, 'status--pending') }}">
+            <i class="fa-solid fa-circle" style="font-size:.4rem"></i> {{ order.status|title }}
+          </span>
+        </div>
+        <div class="order-row__total">R{{ "%.2f"|format(order.total) }}</div>
+        <a href="{{ url_for('store.order_detail', order_id=order.id) }}" class="order-row__link">
+          View <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="orders-empty reveal">
+      <i class="fa-solid fa-box-open"></i>
+      <h2>No orders yet</h2>
+      <p>Your order history will appear here once you make a purchase.</p>
+      <a href="{{ url_for('store.shop') }}" class="btn-shop">
+        <i class="fa-solid fa-arrow-right"></i> Browse the Shop
+      </a>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    gsap.from('.orders-header', { opacity: 0, y: 20, duration: .6, ease: 'power2.out' });
+    gsap.utils.toArray('.order-row').forEach(function (el, i) {
+      gsap.from(el, {
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+        opacity: 0, y: 25, duration: .5, delay: i * .06, ease: 'power2.out'
+      });
+    });
+  })();
+</script>
+{% endblock %}

@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} — Contemporary Hippie{% endblock %}
+{% block meta_description %}Browse our {{ category.name }} articles — holistic health insights, wellness tips, and mindful living guides.{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Category Hero ── */
+  .cat-hero {
+    position: relative;
+    padding: 110px 0 70px;
+    text-align: center;
+    background: linear-gradient(160deg, var(--clr-dark) 0%, var(--clr-dark-soft) 100%);
+    overflow: hidden;
+  }
+  .cat-hero::before {
+    content: '';
+    position: absolute;
+    top: -40%; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(76,175,80,.12) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .cat-hero__kicker {
+    display: inline-block;
+    font-size: .65rem;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--clr-primary-lt);
+    margin-bottom: 14px;
+  }
+  .cat-hero__title {
+    font-family: var(--ff-heading);
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    font-weight: 700;
+    color: var(--clr-white);
+    line-height: 1.15;
+    margin-bottom: 16px;
+  }
+  .cat-hero__desc {
+    max-width: 540px;
+    margin: 0 auto;
+    font-size: 1rem;
+    color: rgba(255,255,255,.6);
+    line-height: 1.7;
+  }
+  .cat-hero__count {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 6px 18px;
+    font-size: .75rem;
+    font-weight: 600;
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 40px;
+    color: rgba(255,255,255,.5);
+  }
+
+  /* ── Posts Grid ── */
+  .cat-content {
+    padding: 56px 0 80px;
+  }
+  .cat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  /* ── Post Card ── */
+  .post-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .post-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+  .post-card__img {
+    position: relative;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+  }
+  .post-card__img img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .6s ease;
+  }
+  .post-card:hover .post-card__img img { transform: scale(1.05); }
+  .post-card__body { padding: 24px; }
+  .post-card__meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: .75rem;
+    color: var(--clr-grey);
+    margin-bottom: 10px;
+  }
+  .post-card__meta i { color: var(--clr-primary); font-size: .7rem; }
+  .post-card__title {
+    font-family: var(--ff-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    line-height: 1.35;
+    margin-bottom: 10px;
+    color: var(--clr-dark);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .post-card__title:hover { color: var(--clr-primary); }
+  .post-card__excerpt {
+    font-size: .875rem;
+    line-height: 1.65;
+    color: var(--clr-grey);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .post-card__read {
+    font-size: .8rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap var(--transition);
+  }
+  .post-card__read:hover { gap: 10px; }
+
+  /* ── Pagination ── */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-top: 48px;
+  }
+  .pagination a,
+  .pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px; height: 40px;
+    padding: 0 12px;
+    font-size: .85rem;
+    font-weight: 500;
+    border-radius: var(--radius);
+    transition: all var(--transition);
+  }
+  .pagination a {
+    color: var(--clr-dark-soft);
+    border: 1px solid var(--clr-grey-lt);
+  }
+  .pagination a:hover {
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border-color: var(--clr-primary);
+  }
+  .pagination .active {
+    background: var(--clr-primary);
+    color: var(--clr-white);
+    border: 1px solid var(--clr-primary);
+  }
+  .pagination .disabled {
+    color: var(--clr-grey-lt);
+    pointer-events: none;
+  }
+  .pagination .ellipsis { border: none; color: var(--clr-grey); }
+
+  /* ── Back Link ── */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--clr-primary);
+    margin-bottom: 32px;
+    transition: gap var(--transition);
+  }
+  .back-link:hover { gap: 12px; }
+
+  /* ── Empty State ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    grid-column: 1 / -1;
+  }
+  .empty-state i {
+    font-size: 3rem;
+    color: var(--clr-grey-lt);
+    margin-bottom: 20px;
+  }
+  .empty-state h3 {
+    font-family: var(--ff-heading);
+    font-size: 1.4rem;
+    margin-bottom: 10px;
+  }
+  .empty-state p { color: var(--clr-grey); }
+
+  /* ── Responsive ── */
+  @media (max-width: 1024px) {
+    .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .cat-grid { grid-template-columns: 1fr; }
+    .cat-hero { padding: 80px 0 50px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- ── Category Hero ── -->
+<section class="cat-hero">
+  <div class="container">
+    <span class="cat-hero__kicker reveal">Category</span>
+    <h1 class="cat-hero__title reveal">{{ category.name }}</h1>
+    {% if category.description %}
+      <p class="cat-hero__desc reveal">{{ category.description }}</p>
+    {% endif %}
+    <span class="cat-hero__count reveal">
+      {{ pagination.total if pagination.total is defined else posts|length }} article{{ 's' if (pagination.total if pagination.total is defined else posts|length) != 1 }}
+    </span>
+  </div>
+</section>
+
+<!-- ── Posts ── -->
+<section class="cat-content">
+  <div class="container">
+    <a href="{{ url_for('blog.blog_list') }}" class="back-link">
+      <i class="fas fa-arrow-left"></i> All Articles
+    </a>
+
+    {% if posts %}
+    <div class="cat-grid">
+      {% for post in pagination.items %}
+        <article class="post-card reveal">
+          <a href="{{ url_for('blog.post_detail', slug=post.slug) }}" class="post-card__img">
+            <img src="{{ url_for('static', filename=post.featured_image) if post.featured_image else url_for('static', filename='images/placeholder.png') }}"
+                 alt="{{ post.title }}" loading="lazy">
+          </a>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span><i class="far fa-calendar"></i> {% if post.published_at %}{{ post.published_at.strftime('%b %d, %Y') }}{% endif %}</span>
+              <span><i class="far fa-clock"></i> {{ post.reading_time }} min read</span>
+            </div>
+            <a href="{{ url_for('blog.post_detail', slug=post.slug) }}">
+              <h2 class="post-card__title">{{ post.title }}</h2>
+            </a>
+            <p class="post-card__excerpt">{{ post.excerpt }}</p>
+            <a href="{{ url_for('blog.post_detail', slug=post.slug) }}" class="post-card__read">
+              Read More <i class="fas fa-arrow-right"></i>
+            </a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.pages > 1 %}
+    <nav class="pagination" aria-label="Category pagination">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('blog.category', slug=category.slug, page=pagination.prev_num) }}">
+          <i class="fas fa-chevron-left"></i>
+        </a>
+      {% else %}
+        <span class="disabled"><i class="fas fa-chevron-left"></i></span>
+      {% endif %}
+
+      {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if page_num %}
+          {% if page_num == pagination.page %}
+            <span class="active">{{ page_num }}</span>
+          {% else %}
+            <a href="{{ url_for('blog.category', slug=category.slug, page=page_num) }}">{{ page_num }}</a>
+          {% endif %}
+        {% else %}
+          <span class="ellipsis">&hellip;</span>
+        {% endif %}
+      {% endfor %}
+
+      {% if pagination.has_next %}
+        <a href="{{ url_for('blog.category', slug=category.slug, page=pagination.next_num) }}">
+          <i class="fas fa-chevron-right"></i>
+        </a>
+      {% else %}
+        <span class="disabled"><i class="fas fa-chevron-right"></i></span>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-leaf"></i>
+      <h3>No articles yet</h3>
+      <p>We're working on new content for this category. Check back soon!</p>
+    </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  /* Hero reveals */
+  gsap.from('.cat-hero__kicker', { opacity: 0, y: 20, duration: 0.5, delay: 0.1 });
+  gsap.from('.cat-hero__title', { opacity: 0, y: 35, duration: 0.7, delay: 0.2, ease: 'power3.out' });
+  gsap.from('.cat-hero__desc', { opacity: 0, y: 20, duration: 0.5, delay: 0.35 });
+  gsap.from('.cat-hero__count', { opacity: 0, scale: 0.8, duration: 0.4, delay: 0.5 });
+
+  /* Stagger post cards */
+  gsap.utils.toArray('.post-card').forEach(function(card, i) {
+    gsap.from(card, {
+      scrollTrigger: {
+        trigger: card,
+        start: 'top 85%',
+        toggleActions: 'play none none none'
+      },
+      opacity: 0,
+      y: 40,
+      duration: 0.6,
+      delay: (i % 3) * 0.12,
+      ease: 'power2.out'
+    });
+  });
+
+  /* Back link */
+  gsap.from('.back-link', {
+    scrollTrigger: { trigger: '.back-link', start: 'top 90%' },
+    opacity: 0, x: -20, duration: 0.4
+  });
+
+  /* Reveal helper */
+  gsap.utils.toArray('.reveal').forEach(function(el) {
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 88%',
+      onEnter: function() { el.classList.add('visible'); }
+    });
+  });
+</script>
+{% endblock %}

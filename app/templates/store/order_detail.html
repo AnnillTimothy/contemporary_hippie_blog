@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block title %}Order #{{ order.order_number }} — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .od-section { padding: 48px 0 80px; }
+
+  /* ── Header ──────────────────────────────────────── */
+  .od-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .od-header h1 {
+    font-family: var(--ff-heading);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    font-weight: 700;
+  }
+  .od-header h1 span {
+    color: var(--clr-grey);
+    font-weight: 400;
+    font-size: .85em;
+  }
+  .od-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--clr-grey);
+    transition: color var(--transition);
+  }
+  .od-back:hover { color: var(--clr-primary); }
+
+  /* ── Info Cards Grid ─────────────────────────────── */
+  .od-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+  .od-info-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    padding: 22px 24px;
+    box-shadow: var(--shadow-sm);
+  }
+  .od-info-card__label {
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--clr-grey);
+    margin-bottom: 8px;
+  }
+  .od-info-card__value {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  .od-status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .sb--pending { background: rgba(243,156,18,.12); color: var(--clr-warning); }
+  .sb--processing { background: rgba(52,152,219,.12); color: var(--clr-info); }
+  .sb--shipped { background: rgba(76,175,80,.12); color: var(--clr-primary); }
+  .sb--delivered { background: rgba(76,175,80,.18); color: var(--clr-primary-dk); }
+  .sb--cancelled { background: rgba(231,76,60,.12); color: var(--clr-danger); }
+  .sb--paid { background: rgba(76,175,80,.12); color: var(--clr-primary); }
+  .sb--unpaid { background: rgba(243,156,18,.12); color: var(--clr-warning); }
+
+  /* ── Items Table ─────────────────────────────────── */
+  .od-items {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 32px;
+  }
+  .od-items__header {
+    font-family: var(--ff-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    padding: 22px 28px;
+    border-bottom: 1px solid var(--clr-grey-lt);
+  }
+  .od-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .od-table thead th {
+    text-align: left;
+    font-size: .72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--clr-grey);
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--clr-grey-lt);
+  }
+  .od-table tbody td {
+    padding: 16px 28px;
+    font-size: .9rem;
+    border-bottom: 1px solid var(--clr-grey-lt);
+    vertical-align: middle;
+  }
+  .od-table tbody tr:last-child td { border-bottom: none; }
+  .od-product-cell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .od-product-cell img {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius);
+    object-fit: cover;
+    background: var(--clr-light-warm);
+  }
+  .od-product-name {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* ── Totals & Shipping ───────────────────────────── */
+  .od-bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+  .od-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+  }
+  .od-card h3 {
+    font-family: var(--ff-heading);
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--clr-grey-lt);
+  }
+  .od-card-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: .9rem;
+  }
+  .od-card-row span:first-child { color: var(--clr-grey); }
+  .od-card-row.total {
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-top: 2px solid var(--clr-dark);
+    margin-top: 10px;
+    padding-top: 12px;
+  }
+  .od-address {
+    font-size: .9rem;
+    line-height: 1.7;
+    color: var(--clr-dark-soft);
+  }
+  .od-notes {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--clr-grey-lt);
+  }
+  .od-notes strong {
+    display: block;
+    font-size: .82rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 6px;
+    color: var(--clr-grey);
+  }
+  .od-notes p {
+    font-size: .88rem;
+    line-height: 1.7;
+    color: var(--clr-dark-soft);
+  }
+
+  @media (max-width: 768px) {
+    .od-bottom-grid { grid-template-columns: 1fr; }
+    .od-table thead { display: none; }
+    .od-table tbody td {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 28px;
+    }
+    .od-table tbody td::before {
+      content: attr(data-label);
+      font-weight: 700;
+      font-size: .75rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--clr-grey);
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="od-section">
+  <div class="container">
+    <!-- Header -->
+    <div class="od-header reveal">
+      <h1>Order <span>#{{ order.order_number }}</span></h1>
+      <a href="{{ url_for('store.orders') }}" class="od-back">
+        <i class="fa-solid fa-arrow-left"></i> All Orders
+      </a>
+    </div>
+
+    <!-- Info Cards -->
+    <div class="od-info-grid reveal">
+      <div class="od-info-card">
+        <div class="od-info-card__label">Date Placed</div>
+        <div class="od-info-card__value">{{ order.created_at.strftime('%d %B %Y') }}</div>
+      </div>
+      <div class="od-info-card">
+        <div class="od-info-card__label">Order Status</div>
+        <div class="od-info-card__value">
+          {% set badge_map = {
+            'pending': 'sb--pending',
+            'processing': 'sb--processing',
+            'shipped': 'sb--shipped',
+            'delivered': 'sb--delivered',
+            'cancelled': 'sb--cancelled'
+          } %}
+          <span class="od-status-badge {{ badge_map.get(order.status, 'sb--pending') }}">
+            <i class="fa-solid fa-circle" style="font-size:.4rem"></i> {{ order.status|title }}
+          </span>
+        </div>
+      </div>
+      <div class="od-info-card">
+        <div class="od-info-card__label">Payment</div>
+        <div class="od-info-card__value">
+          <span class="od-status-badge {{ 'sb--paid' if order.payment_status == 'paid' else 'sb--unpaid' }}">
+            {{ order.payment_status|title }}
+          </span>
+        </div>
+      </div>
+      <div class="od-info-card">
+        <div class="od-info-card__label">Total</div>
+        <div class="od-info-card__value">R{{ "%.2f"|format(order.total) }}</div>
+      </div>
+    </div>
+
+    <!-- Items -->
+    <div class="od-items reveal">
+      <div class="od-items__header">Items Ordered</div>
+      <table class="od-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th style="text-align:right">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order.items.all() %}
+          <tr>
+            <td data-label="Product">
+              <div class="od-product-cell">
+                {% if item.product and item.product.image %}
+                  <img src="{{ url_for('static', filename='uploads/' ~ item.product.image) }}" alt="{{ item.product.name }}">
+                {% else %}
+                  <img src="{{ url_for('static', filename='images/placeholder-product.jpg') }}" alt="Product">
+                {% endif %}
+                <span class="od-product-name">{{ item.product.name if item.product else 'Product unavailable' }}</span>
+              </div>
+            </td>
+            <td data-label="Price">R{{ "%.2f"|format(item.price) }}</td>
+            <td data-label="Quantity">{{ item.quantity }}</td>
+            <td data-label="Subtotal" style="text-align:right;font-weight:600">R{{ "%.2f"|format(item.price * item.quantity) }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Bottom Grid: Shipping + Totals -->
+    <div class="od-bottom-grid">
+      <div class="od-card reveal">
+        <h3>Shipping Details</h3>
+        <div class="od-address">{{ order.shipping_address }}</div>
+        {% if order.notes %}
+        <div class="od-notes">
+          <strong>Order Notes</strong>
+          <p>{{ order.notes }}</p>
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="od-card reveal">
+        <h3>Order Totals</h3>
+        <div class="od-card-row">
+          <span>Subtotal</span>
+          <span>R{{ "%.2f"|format(order.subtotal) }}</span>
+        </div>
+        <div class="od-card-row">
+          <span>Shipping</span>
+          <span>R{{ "%.2f"|format(order.shipping_cost) }}</span>
+        </div>
+        <div class="od-card-row total">
+          <span>Total</span>
+          <span>R{{ "%.2f"|format(order.total) }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    gsap.from('.od-header', { opacity: 0, y: 20, duration: .6, ease: 'power2.out' });
+    gsap.utils.toArray('.od-info-card').forEach(function (card, i) {
+      gsap.from(card, { opacity: 0, y: 20, duration: .4, delay: .1 + i * .08, ease: 'power2.out' });
+    });
+    gsap.from('.od-items', { opacity: 0, y: 30, duration: .6, delay: .3, ease: 'power2.out' });
+    gsap.utils.toArray('.od-card').forEach(function (card, i) {
+      gsap.from(card, { opacity: 0, y: 25, duration: .5, delay: .4 + i * .1, ease: 'power2.out' });
+    });
+  })();
+</script>
+{% endblock %}

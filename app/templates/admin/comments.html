@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Comments — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-layout{display:flex;min-height:calc(100vh - var(--header-h))}
+  .admin-sidebar{width:250px;background:var(--clr-dark);color:#fff;padding:2rem 0;flex-shrink:0;position:sticky;top:var(--header-h);height:calc(100vh - var(--header-h));overflow-y:auto}
+  .admin-sidebar h2{font-family:var(--ff-heading);font-size:1.2rem;padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--clr-dark-soft);margin-bottom:1rem;color:var(--clr-accent)}
+  .admin-sidebar nav a{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;color:rgba(255,255,255,.7);text-decoration:none;font-size:.9rem;transition:var(--transition)}
+  .admin-sidebar nav a:hover,.admin-sidebar nav a.active{background:var(--clr-dark-soft);color:#fff;border-left:3px solid var(--clr-primary)}
+  .admin-sidebar nav a i{width:20px;text-align:center}
+  .admin-main{flex:1;padding:2rem 2.5rem;background:var(--clr-light);min-width:0}
+  .admin-page-header{margin-bottom:2rem}
+  .admin-page-header h1{font-family:var(--ff-heading);font-size:1.8rem;color:var(--clr-dark)}
+
+  .section-title{font-family:var(--ff-heading);font-size:1.3rem;color:var(--clr-dark);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+  .section-title .count{background:var(--clr-primary);color:#fff;font-size:.75rem;padding:.2rem .6rem;border-radius:50px;font-family:var(--ff-body)}
+
+  .comment-card{background:var(--clr-white);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:1.5rem;margin-bottom:1rem;border-left:3px solid var(--clr-grey-lt);transition:var(--transition)}
+  .comment-card:hover{box-shadow:var(--shadow-md)}
+  .comment-card.pending{border-left-color:var(--clr-warning)}
+  .comment-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.75rem;flex-wrap:wrap;gap:.5rem}
+  .comment-author{font-weight:600;font-size:.95rem;color:var(--clr-dark)}
+  .comment-meta{font-size:.8rem;color:var(--clr-grey)}
+  .comment-post{font-size:.85rem;color:var(--clr-info);margin-bottom:.5rem}
+  .comment-body{font-size:.9rem;line-height:1.6;color:var(--clr-dark-soft);margin-bottom:1rem}
+  .comment-actions{display:flex;gap:.5rem}
+  .btn-sm{display:inline-flex;align-items:center;gap:.4rem;padding:.4rem .8rem;border-radius:var(--radius);font-size:.8rem;font-weight:500;border:none;cursor:pointer;transition:var(--transition)}
+  .btn-approve{background:rgba(76,175,80,.12);color:var(--clr-primary)}
+  .btn-approve:hover{background:var(--clr-primary);color:#fff}
+  .btn-delete{background:rgba(231,76,60,.12);color:var(--clr-danger)}
+  .btn-delete:hover{background:var(--clr-danger);color:#fff}
+  .action-form{display:inline}
+  .empty-state{text-align:center;padding:2.5rem;color:var(--clr-grey);font-size:.9rem}
+  .section-divider{margin:2.5rem 0;border:none;border-top:1px solid var(--clr-grey-lt)}
+
+  @media(max-width:768px){
+    .admin-layout{flex-direction:column}
+    .admin-sidebar{width:100%;height:auto;position:relative;top:0}
+    .admin-sidebar nav{display:flex;flex-wrap:wrap;gap:.25rem;padding:0 1rem 1rem}
+    .admin-sidebar nav a{padding:.5rem .75rem;font-size:.8rem}
+    .admin-main{padding:1.5rem}
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <h2><i class="fas fa-leaf"></i> Admin Panel</h2>
+    <nav>
+      <a href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+      <a href="{{ url_for('admin.posts') }}"><i class="fas fa-pen-fancy"></i> Posts</a>
+      <a href="{{ url_for('admin.ai_generate') }}"><i class="fas fa-robot"></i> AI Generate</a>
+      <a href="{{ url_for('admin.products') }}"><i class="fas fa-box-open"></i> Products</a>
+      <a href="{{ url_for('admin.orders') }}"><i class="fas fa-shopping-bag"></i> Orders</a>
+      <a href="{{ url_for('admin.comments') }}" class="active"><i class="fas fa-comments"></i> Comments</a>
+      <a href="{{ url_for('admin.messages') }}"><i class="fas fa-envelope"></i> Messages</a>
+      <a href="{{ url_for('admin.users') }}"><i class="fas fa-users"></i> Users</a>
+      <a href="{{ url_for('admin.subscribers') }}"><i class="fas fa-bell"></i> Subscribers</a>
+    </nav>
+  </aside>
+
+  <div class="admin-main">
+    <div class="admin-page-header">
+      <h1>Comments</h1>
+    </div>
+
+    <!-- Pending Comments -->
+    <h2 class="section-title">
+      <i class="fas fa-clock"></i> Pending Approval
+      <span class="count">{{ pending | length }}</span>
+    </h2>
+
+    {% for comment in pending %}
+    <div class="comment-card pending">
+      <div class="comment-header">
+        <div>
+          <span class="comment-author">{{ comment.author_name }}</span>
+          <span class="comment-meta"> · {{ comment.created_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+        </div>
+      </div>
+      {% if comment.post %}
+      <p class="comment-post"><i class="fas fa-link"></i> On: {{ comment.post.title }}</p>
+      {% endif %}
+      <div class="comment-body">{{ comment.body }}</div>
+      <div class="comment-actions">
+        <form method="POST" action="{{ url_for('admin.approve_comment', id=comment.id) }}" class="action-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-sm btn-approve"><i class="fas fa-check"></i> Approve</button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.delete_comment', id=comment.id) }}" class="action-form" onsubmit="return confirm('Delete this comment?')">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-sm btn-delete"><i class="fas fa-trash"></i> Delete</button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <i class="fas fa-check-circle" style="font-size:2rem;margin-bottom:.5rem;display:block;color:var(--clr-primary)"></i>
+      No pending comments
+    </div>
+    {% endfor %}
+
+    <hr class="section-divider">
+
+    <!-- Approved Comments -->
+    <h2 class="section-title">
+      <i class="fas fa-check-circle"></i> Approved
+      <span class="count">{{ approved | length }}</span>
+    </h2>
+
+    {% for comment in approved %}
+    <div class="comment-card">
+      <div class="comment-header">
+        <div>
+          <span class="comment-author">{{ comment.author_name }}</span>
+          <span class="comment-meta"> · {{ comment.created_at.strftime('%b %d, %Y at %I:%M %p') }}</span>
+        </div>
+      </div>
+      {% if comment.post %}
+      <p class="comment-post"><i class="fas fa-link"></i> On: {{ comment.post.title }}</p>
+      {% endif %}
+      <div class="comment-body">{{ comment.body }}</div>
+      <div class="comment-actions">
+        <form method="POST" action="{{ url_for('admin.delete_comment', id=comment.id) }}" class="action-form" onsubmit="return confirm('Delete this comment?')">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit" class="btn-sm btn-delete"><i class="fas fa-trash"></i> Delete</button>
+        </form>
+      </div>
+    </div>
+    {% else %}
+    <div class="empty-state">No approved comments yet</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

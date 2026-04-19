@@ -1,0 +1,379 @@
+{% extends "base.html" %}
+
+{% block title %}Shop — Contemporary Hippie{% endblock %}
+{% block meta_description %}Curated wellness essentials for the modern conscious consumer. Shop organic, sustainable &amp; holistic products.{% endblock %}
+
+{% block extra_css %}
+<style>
+  /* ── Hero ────────────────────────────────────────── */
+  .shop-hero {
+    position: relative;
+    background: linear-gradient(135deg, var(--clr-dark) 0%, var(--clr-dark-soft) 100%);
+    color: var(--clr-white);
+    text-align: center;
+    padding: 100px 24px 80px;
+    overflow: hidden;
+  }
+  .shop-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("{{ url_for('static', filename='images/shop-hero.jpg') }}") center/cover no-repeat;
+    opacity: .25;
+  }
+  .shop-hero .container { position: relative; z-index: 1; }
+  .shop-hero h1 {
+    font-family: var(--ff-heading);
+    font-size: clamp(2.4rem, 5vw, 3.8rem);
+    font-weight: 700;
+    letter-spacing: -.02em;
+    margin-bottom: 12px;
+  }
+  .shop-hero p {
+    font-size: 1.05rem;
+    font-weight: 300;
+    max-width: 560px;
+    margin: 0 auto;
+    opacity: .85;
+  }
+
+  /* ── Toolbar ─────────────────────────────────────── */
+  .shop-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 32px 0 24px;
+  }
+  .shop-categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .shop-categories a {
+    padding: 8px 20px;
+    border-radius: 100px;
+    font-size: .8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border: 1.5px solid var(--clr-grey-lt);
+    color: var(--clr-dark);
+    transition: all var(--transition);
+  }
+  .shop-categories a:hover,
+  .shop-categories a.active {
+    background: var(--clr-dark);
+    color: var(--clr-white);
+    border-color: var(--clr-dark);
+  }
+  .shop-controls {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .shop-search {
+    position: relative;
+  }
+  .shop-search input {
+    font-family: var(--ff-body);
+    font-size: .85rem;
+    padding: 10px 16px 10px 38px;
+    border: 1.5px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    background: var(--clr-white);
+    width: 220px;
+    transition: border-color var(--transition);
+  }
+  .shop-search input:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+  }
+  .shop-search i {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--clr-grey);
+    font-size: .85rem;
+  }
+  .shop-sort select {
+    font-family: var(--ff-body);
+    font-size: .85rem;
+    padding: 10px 36px 10px 16px;
+    border: 1.5px solid var(--clr-grey-lt);
+    border-radius: var(--radius);
+    background: var(--clr-white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23888'/%3E%3C/svg%3E") right 14px center/10px no-repeat;
+    appearance: none;
+    cursor: pointer;
+    transition: border-color var(--transition);
+  }
+  .shop-sort select:focus {
+    outline: none;
+    border-color: var(--clr-primary);
+  }
+
+  /* ── Product Grid ────────────────────────────────── */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 32px;
+    padding-bottom: 48px;
+  }
+  .product-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition), box-shadow var(--transition);
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-lg);
+  }
+  .product-card__img {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    background: var(--clr-light-warm);
+  }
+  .product-card__img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .5s ease;
+  }
+  .product-card:hover .product-card__img img {
+    transform: scale(1.06);
+  }
+  .product-card__badge {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    padding: 4px 12px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    border-radius: 100px;
+    color: var(--clr-white);
+  }
+  .badge--sale { background: var(--clr-danger); }
+  .badge--featured { background: var(--clr-accent); }
+  .badge--out { background: var(--clr-grey); }
+  .product-card__body {
+    padding: 22px 20px 26px;
+  }
+  .product-card__category {
+    font-size: .7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--clr-primary);
+    margin-bottom: 6px;
+  }
+  .product-card__name {
+    font-family: var(--ff-heading);
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  .product-card__name a:hover { color: var(--clr-primary); }
+  .product-card__price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 1.05rem;
+  }
+  .price--old {
+    text-decoration: line-through;
+    color: var(--clr-grey);
+    font-weight: 400;
+    font-size: .9rem;
+  }
+  .price--sale { color: var(--clr-danger); }
+
+  /* ── Pagination ──────────────────────────────────── */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 32px 0 64px;
+  }
+  .pagination a,
+  .pagination span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: var(--radius);
+    font-size: .85rem;
+    font-weight: 600;
+    border: 1.5px solid var(--clr-grey-lt);
+    transition: all var(--transition);
+  }
+  .pagination a:hover {
+    background: var(--clr-dark);
+    color: var(--clr-white);
+    border-color: var(--clr-dark);
+  }
+  .pagination .active {
+    background: var(--clr-dark);
+    color: var(--clr-white);
+    border-color: var(--clr-dark);
+  }
+
+  /* ── Empty State ─────────────────────────────────── */
+  .shop-empty {
+    text-align: center;
+    padding: 80px 24px;
+  }
+  .shop-empty i {
+    font-size: 3rem;
+    color: var(--clr-grey-lt);
+    margin-bottom: 16px;
+  }
+  .shop-empty p {
+    font-size: 1.1rem;
+    color: var(--clr-grey);
+  }
+
+  @media (max-width: 640px) {
+    .shop-toolbar { flex-direction: column; align-items: stretch; }
+    .shop-search input { width: 100%; }
+    .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="shop-hero">
+  <div class="container">
+    <h1 class="reveal">The Wellness Edit</h1>
+    <p class="reveal">Thoughtfully sourced essentials for body, mind &amp; spirit — curated with intention.</p>
+  </div>
+</section>
+
+<div class="container">
+  <!-- Toolbar -->
+  <div class="shop-toolbar reveal">
+    <div class="shop-categories">
+      <a href="{{ url_for('store.shop') }}" class="{{ 'active' if not current_category }}">All</a>
+      {% for cat in categories %}
+        <a href="{{ url_for('store.shop', category=cat.slug) }}" class="{{ 'active' if current_category and current_category.slug == cat.slug }}">{{ cat.name }}</a>
+      {% endfor %}
+    </div>
+
+    <div class="shop-controls">
+      <form class="shop-search" action="{{ url_for('store.shop') }}" method="get">
+        {% if current_category %}<input type="hidden" name="category" value="{{ current_category.slug }}">{% endif %}
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" name="q" placeholder="Search products…" value="{{ search_query or '' }}">
+      </form>
+
+      <div class="shop-sort">
+        <select onchange="window.location.href=this.value">
+          <option value="{{ url_for('store.shop', category=current_category.slug if current_category else None, q=search_query or None) }}" {{ 'selected' if not sort_by }}>Sort by</option>
+          <option value="{{ url_for('store.shop', category=current_category.slug if current_category else None, q=search_query or None, sort='price_asc') }}" {{ 'selected' if sort_by == 'price_asc' }}>Price: Low → High</option>
+          <option value="{{ url_for('store.shop', category=current_category.slug if current_category else None, q=search_query or None, sort='price_desc') }}" {{ 'selected' if sort_by == 'price_desc' }}>Price: High → Low</option>
+          <option value="{{ url_for('store.shop', category=current_category.slug if current_category else None, q=search_query or None, sort='newest') }}" {{ 'selected' if sort_by == 'newest' }}>Newest</option>
+          <option value="{{ url_for('store.shop', category=current_category.slug if current_category else None, q=search_query or None, sort='featured') }}" {{ 'selected' if sort_by == 'featured' }}>Featured</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  {% if products %}
+  <div class="product-grid">
+    {% for product in products %}
+    <article class="product-card reveal">
+      <a href="{{ url_for('store.product_detail', slug=product.slug) }}" class="product-card__img">
+        {% if product.image %}
+          <img src="{{ url_for('static', filename='uploads/' ~ product.image) }}" alt="{{ product.name }}" loading="lazy">
+        {% else %}
+          <img src="{{ url_for('static', filename='images/placeholder-product.jpg') }}" alt="{{ product.name }}" loading="lazy">
+        {% endif %}
+        {% if not product.in_stock %}
+          <span class="product-card__badge badge--out">Sold Out</span>
+        {% elif product.is_on_sale %}
+          <span class="product-card__badge badge--sale">Sale</span>
+        {% elif product.is_featured %}
+          <span class="product-card__badge badge--featured">Featured</span>
+        {% endif %}
+      </a>
+      <div class="product-card__body">
+        {% if product.category %}
+          <div class="product-card__category">{{ product.category.name }}</div>
+        {% endif %}
+        <h3 class="product-card__name">
+          <a href="{{ url_for('store.product_detail', slug=product.slug) }}">{{ product.name }}</a>
+        </h3>
+        <div class="product-card__price">
+          {% if product.is_on_sale %}
+            <span class="price--sale">R{{ "%.2f"|format(product.sale_price) }}</span>
+            <span class="price--old">R{{ "%.2f"|format(product.price) }}</span>
+          {% else %}
+            <span>R{{ "%.2f"|format(product.price) }}</span>
+          {% endif %}
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if pagination and pagination.pages > 1 %}
+  <nav class="pagination" aria-label="Shop pagination">
+    {% if pagination.has_prev %}
+      <a href="{{ url_for('store.shop', page=pagination.prev_num, category=current_category.slug if current_category else None, sort=sort_by or None, q=search_query or None) }}"><i class="fa-solid fa-chevron-left"></i></a>
+    {% endif %}
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+      {% if p %}
+        <a href="{{ url_for('store.shop', page=p, category=current_category.slug if current_category else None, sort=sort_by or None, q=search_query or None) }}" class="{{ 'active' if p == pagination.page }}">{{ p }}</a>
+      {% else %}
+        <span>&hellip;</span>
+      {% endif %}
+    {% endfor %}
+    {% if pagination.has_next %}
+      <a href="{{ url_for('store.shop', page=pagination.next_num, category=current_category.slug if current_category else None, sort=sort_by or None, q=search_query or None) }}"><i class="fa-solid fa-chevron-right"></i></a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="shop-empty reveal">
+    <i class="fa-solid fa-leaf"></i>
+    <p>No products found. Try a different search or category.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    /* Staggered card reveal */
+    gsap.utils.toArray('.product-card').forEach(function (card, i) {
+      gsap.from(card, {
+        scrollTrigger: { trigger: card, start: 'top 90%', once: true },
+        opacity: 0,
+        y: 40,
+        duration: .6,
+        delay: (i % 4) * .1,
+        ease: 'power2.out'
+      });
+    });
+
+    /* Hero parallax-style text */
+    gsap.from('.shop-hero h1', { opacity: 0, y: 30, duration: .8, ease: 'power3.out' });
+    gsap.from('.shop-hero p', { opacity: 0, y: 20, duration: .8, delay: .15, ease: 'power3.out' });
+  })();
+</script>
+{% endblock %}

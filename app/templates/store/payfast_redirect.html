@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting to PayFast — Contemporary Hippie</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f9f6f0;
+      font-family: 'Montserrat', sans-serif;
+      color: #1a1a1a;
+    }
+    .redirect-card {
+      text-align: center;
+      padding: 60px 40px;
+      max-width: 480px;
+    }
+    .redirect-card h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .redirect-card p {
+      font-size: .95rem;
+      color: #888;
+      margin-bottom: 32px;
+      line-height: 1.6;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #e0e0e0;
+      border-top-color: #4CAF50;
+      border-radius: 50%;
+      margin: 0 auto 24px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .redirect-card noscript {
+      display: block;
+      margin-top: 16px;
+    }
+    .redirect-card noscript button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 36px;
+      background: #1a1a1a;
+      color: #fff;
+      font-family: 'Montserrat', sans-serif;
+      font-size: .85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="redirect-card">
+    <div class="spinner"></div>
+    <h1>Redirecting to PayFast</h1>
+    <p>Please wait while we securely transfer you to PayFast to complete your payment. Do not close this window.</p>
+
+    <form id="payfastForm" action="{{ payfast_url }}" method="POST">
+      {% for key, value in payment_data.items() %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+      {% endfor %}
+      <noscript>
+        <button type="submit">Click here if you are not redirected</button>
+      </noscript>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('payfastForm').submit();
+  </script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}Order Confirmed — Contemporary Hippie{% endblock %}
+
+{% block extra_css %}
+<style>
+  .success-section {
+    padding: 80px 0;
+    text-align: center;
+  }
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    background: var(--clr-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--clr-white);
+    font-size: 2rem;
+  }
+  .success-section h1 {
+    font-family: var(--ff-heading);
+    font-size: clamp(2rem, 4vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .success-section > .container > p {
+    color: var(--clr-grey);
+    font-size: 1rem;
+    max-width: 520px;
+    margin: 0 auto 40px;
+    line-height: 1.7;
+  }
+
+  /* ── Summary Card ────────────────────────────────── */
+  .order-card {
+    background: var(--clr-white);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    max-width: 600px;
+    margin: 0 auto 40px;
+    padding: 36px 32px;
+    text-align: left;
+  }
+  .order-card h2 {
+    font-family: var(--ff-heading);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--clr-grey-lt);
+  }
+  .oc-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: .9rem;
+  }
+  .oc-row span:first-child { color: var(--clr-grey); }
+  .oc-row.total {
+    font-weight: 700;
+    font-size: 1.1rem;
+    border-top: 2px solid var(--clr-dark);
+    margin-top: 12px;
+    padding-top: 14px;
+  }
+  .oc-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px;
+    border-radius: 100px;
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    background: rgba(76, 175, 80, .12);
+    color: var(--clr-primary);
+  }
+
+  .success-actions {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .success-actions a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: var(--radius);
+    font-size: .85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    transition: all var(--transition);
+  }
+  .btn-primary {
+    background: var(--clr-dark);
+    color: var(--clr-white);
+  }
+  .btn-primary:hover { background: var(--clr-primary); }
+  .btn-outline {
+    border: 1.5px solid var(--clr-dark);
+    color: var(--clr-dark);
+  }
+  .btn-outline:hover {
+    background: var(--clr-dark);
+    color: var(--clr-white);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="success-section">
+  <div class="container">
+    <div class="success-icon reveal"><i class="fa-solid fa-check"></i></div>
+    <h1 class="reveal">Thank You for Your Order!</h1>
+    <p class="reveal">Your order has been placed successfully. We'll send you updates as it progresses on its journey to you.</p>
+
+    <div class="order-card reveal">
+      <h2>Order Summary</h2>
+      <div class="oc-row">
+        <span>Order Number</span>
+        <span><strong>{{ order.order_number }}</strong></span>
+      </div>
+      <div class="oc-row">
+        <span>Status</span>
+        <span class="oc-status"><i class="fa-solid fa-circle" style="font-size:.45rem"></i> {{ order.status|title }}</span>
+      </div>
+      <div class="oc-row">
+        <span>Payment</span>
+        <span>{{ order.payment_status|title }}</span>
+      </div>
+      <div class="oc-row">
+        <span>Subtotal</span>
+        <span>R{{ "%.2f"|format(order.subtotal) }}</span>
+      </div>
+      <div class="oc-row">
+        <span>Shipping</span>
+        <span>R{{ "%.2f"|format(order.shipping_cost) }}</span>
+      </div>
+      <div class="oc-row total">
+        <span>Total</span>
+        <span>R{{ "%.2f"|format(order.total) }}</span>
+      </div>
+    </div>
+
+    <div class="success-actions reveal">
+      <a href="{{ url_for('store.order_detail', order_id=order.id) }}" class="btn-primary">
+        <i class="fa-solid fa-receipt"></i> View Order Details
+      </a>
+      <a href="{{ url_for('store.shop') }}" class="btn-outline">
+        <i class="fa-solid fa-arrow-right"></i> Continue Shopping
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  (function () {
+    gsap.from('.success-icon', { scale: 0, duration: .5, ease: 'back.out(1.7)' });
+    gsap.from('.success-section h1', { opacity: 0, y: 20, duration: .6, delay: .2, ease: 'power2.out' });
+    gsap.from('.order-card', { opacity: 0, y: 30, duration: .6, delay: .35, ease: 'power2.out' });
+    gsap.from('.success-actions', { opacity: 0, y: 20, duration: .5, delay: .5, ease: 'power2.out' });
+  })();
+</script>
+{% endblock %}
